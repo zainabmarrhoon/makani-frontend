@@ -1,16 +1,38 @@
-# React + Vite
+# Makani
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Makani is a platform that allows business owners to create and manage their own online store without needing to build a website from scratch.
 
-Currently, two official plugins are available:
+Business owners can create their store, add and manage products, customize their website, preview it, and publish it with a unique URL. Customers can browse products, add items to their cart, place orders, choose a payment method, and track their order status.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+The platform also allows business owners to manage customer orders, verify payments, update order statuses, and receive notifications when new orders are placed.
 
-## React Compiler
+## Screenshot / Logo
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+*Add your application screenshot or project logo here.*
 
-## Expanding the ESLint configuration
+## Getting Started
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+### Deployed App
+
+### Planning Materials
+
+### Backend Repository
+
+[Makani Backend](https://github.com/zainabmarrhoon/makani-Backend)
+
+## Technologies Used
+
+* React
+* JavaScript
+* HTML
+* CSS
+* Vite
+* FastAPI
+* Python
+* PostgreSQL
+* SQLAlchemy
+* JWT Authentication
+
+## Attributions
+
+## Next Steps
