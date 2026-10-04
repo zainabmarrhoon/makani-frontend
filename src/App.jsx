@@ -12,6 +12,7 @@ import CreateStore from './components/CreateStore/CreateStore';
 import Products from './components/Products/Products';
 import CreateProduct from './components/CreateProduct/CreateProduct';
 import Orders from './components/Orders/Orders';
+import StoreDetails from './components/StoreDetails/StoreDetails';
 
 import { UserContext } from './contexts/UserContext';
 
@@ -28,8 +29,9 @@ const App = () => {
         <Route path='/stores' element={<Stores />} />
         <Route path='/stores/create' element={<CreateStore />} />
         <Route path='/products' element={<Products />} />
-<Route path='/products/create' element={<CreateProduct />} />
-<Route path='/orders' element={<Orders />} />
+        <Route path='/products/create' element={<CreateProduct />} />
+        <Route path='/orders' element={<Orders />} />
+        <Route path='/stores/:storeId' element={<StoreDetails />} />
         
 
 

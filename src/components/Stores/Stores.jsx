@@ -1,3 +1,4 @@
+
 import { useNavigate } from 'react-router';
 
 const Stores = () => {
@@ -41,7 +42,10 @@ const Stores = () => {
               <h2>{store.name}</h2>
               <p>{store.description}</p>
 
-              <button className="manage-store-btn">
+              <button
+                className="manage-store-btn"
+                onClick={() => navigate(`/stores/${store.id}`)}
+              >
                 Manage Store
               </button>
             </div>
@@ -53,3 +57,4 @@ const Stores = () => {
 };
 
 export default Stores;
+
