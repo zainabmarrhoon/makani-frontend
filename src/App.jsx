@@ -14,6 +14,7 @@ import CreateProduct from './components/CreateProduct/CreateProduct';
 import Orders from './components/Orders/Orders';
 import StoreDetails from './components/StoreDetails/StoreDetails';
 import StoreProducts from './components/StoreProducts/StoreProducts';
+import StoreOrders from './components/StoreOrders/StoreOrders';
 
 import { UserContext } from './contexts/UserContext';
 
@@ -34,6 +35,7 @@ const App = () => {
         <Route path='/orders' element={<Orders />} />
         <Route path='/stores/:storeId' element={<StoreDetails />} />
         <Route path='/stores/:storeId/products' element={<StoreProducts />} />
+        <Route path='/stores/:storeId/orders' element={<StoreOrders />} />
         
 
 
