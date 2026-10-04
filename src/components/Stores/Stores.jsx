@@ -1,4 +1,7 @@
+import { useNavigate } from 'react-router';
+
 const Stores = () => {
+  const navigate = useNavigate();
   const stores = [];
 
   return (
@@ -10,7 +13,10 @@ const Stores = () => {
         </div>
 
         {stores.length > 0 && (
-          <button className="create-store-btn">
+          <button
+            className="create-store-btn"
+            onClick={() => navigate('/stores/create')}
+          >
             Create New Store
           </button>
         )}
@@ -21,7 +27,10 @@ const Stores = () => {
           <h2>No stores yet</h2>
           <p>Start building your online store with Makani.</p>
 
-          <button className="create-store-btn">
+          <button
+            className="create-store-btn"
+            onClick={() => navigate('/stores/create')}
+          >
             Create Your First Store
           </button>
         </div>

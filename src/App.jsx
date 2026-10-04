@@ -9,6 +9,8 @@ import Dashboard from './components/Dashboard/Dashboard';
 import Landing from './components/Landing/Landing';
 import Stores from './components/Stores/Stores';
 import CreateStore from './components/CreateStore/CreateStore';
+import Products from './components/Products/Products';
+import CreateProduct from './components/CreateProduct/CreateProduct';
 
 import { UserContext } from './contexts/UserContext';
 
@@ -24,6 +26,12 @@ const App = () => {
         <Route path='/sign-in' element={<SignInForm />} />
         <Route path='/stores' element={<Stores />} />
         <Route path='/stores/create' element={<CreateStore />} />
+        <Route path='/products' element={<Products />} />
+<Route path='/products/create' element={<CreateProduct />} />
+        
+
+
+
       </Routes>
     </>
   );
