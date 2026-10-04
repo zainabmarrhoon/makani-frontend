@@ -13,24 +13,39 @@ const StoreDetails = () => {
         Back to My Stores
       </button>
 
-      <h1>Store Details</h1>
-      <p>Store ID: {storeId}</p>
+      <div className="store-details-header">
+        <h1>Store Details</h1>
+        <p>Manage your store.</p>
+      </div>
 
-      <div>
-        <h2>Manage Your Store</h2>
-
+      <div className="store-details-actions">
         <button
           type="button"
-          onClick={() => navigate(`/stores/${storeId}/products`)}
+          onClick={() =>
+            navigate(`/stores/${storeId}/products`)
+          }
         >
-          Products
+          Manage Products
         </button>
 
         <button
           type="button"
-          onClick={() => navigate(`/stores/${storeId}/orders`)}
+          onClick={() =>
+            navigate(`/stores/${storeId}/orders`)
+          }
         >
-          Orders
+          View Orders
+        </button>
+
+        <button
+          type="button"
+          onClick={() =>
+            navigate(
+              `/stores/${storeId}/notifications`
+            )
+          }
+        >
+          Notifications
         </button>
       </div>
     </div>

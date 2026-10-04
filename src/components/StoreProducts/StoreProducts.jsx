@@ -1,12 +1,55 @@
+import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router';
+import {
+  getStoreProducts,
+  deleteProduct
+} from '../../services/productService';
 
 const StoreProducts = () => {
   const navigate = useNavigate();
   const { storeId } = useParams();
 
-  const products = [];
+  const [products, setProducts] = useState([]);
+  const [message, setMessage] = useState('');
 
-  const createProduct = () => {
+  useEffect(() => {
+    const loadProducts = async () => {
+      try {
+        const data = await getStoreProducts(storeId);
+        setProducts(data);
+      } catch (err) {
+        setMessage(err.message);
+      }
+    };
+
+    loadProducts();
+  }, [storeId]);
+
+  const handleDelete = async (productId) => {
+    const confirmed = window.confirm(
+      'Are you sure you want to delete this product?'
+    );
+
+    if (!confirmed) {
+      return;
+    }
+
+    try {
+      setMessage('');
+
+      await deleteProduct(productId);
+
+      setProducts((currentProducts) =>
+        currentProducts.filter(
+          (product) => product.id !== productId
+        )
+      );
+    } catch (err) {
+      setMessage(err.message);
+    }
+  };
+
+  const handleCreateProduct = () => {
     navigate(`/products/create?storeId=${storeId}`);
   };
 
@@ -20,29 +63,36 @@ const StoreProducts = () => {
       </button>
 
       <div className="store-products-header">
-        <div>
-          <h1>Store Products</h1>
-          <p>Manage the products in your store.</p>
-        </div>
+        <h1>Store Products</h1>
+
+        <p>
+          Manage the products in your store.
+        </p>
 
         <button
           type="button"
-          onClick={createProduct}
+          onClick={handleCreateProduct}
         >
-          Add Product
+          Create Product
         </button>
       </div>
 
+      {message && <p>{message}</p>}
+
       {products.length === 0 ? (
-        <div className="store-products-empty">
+        <div className="products-empty">
           <h2>No products yet</h2>
-          <p>Add your first product to start selling.</p>
+
+          <p>
+            Create your first product to start
+            selling.
+          </p>
 
           <button
             type="button"
-            onClick={createProduct}
+            onClick={handleCreateProduct}
           >
-            Add Your First Product
+            Create Your First Product
           </button>
         </div>
       ) : (
@@ -52,6 +102,13 @@ const StoreProducts = () => {
               className="product-card"
               key={product.id}
             >
+              {product.image && (
+                <img
+                  src={product.image}
+                  alt={product.name}
+                />
+              )}
+
               <h2>{product.name}</h2>
 
               <p>{product.description}</p>
@@ -66,7 +123,27 @@ const StoreProducts = () => {
                   navigate(`/products/${product.id}`)
                 }
               >
-                Manage Product
+                View Product
+              </button>
+
+              <button
+                type="button"
+                onClick={() =>
+                  navigate(
+                    `/products/${product.id}/edit`
+                  )
+                }
+              >
+                Edit Product
+              </button>
+
+              <button
+                type="button"
+                onClick={() =>
+                  handleDelete(product.id)
+                }
+              >
+                Delete Product
               </button>
             </div>
           ))}
