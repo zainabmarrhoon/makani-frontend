@@ -1,9 +1,24 @@
 
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
+import { getStores } from '../../services/storeService';
 
 const Stores = () => {
   const navigate = useNavigate();
-  const stores = [];
+  const [stores, setStores] = useState([]);
+
+  useEffect(() => {
+    const loadStores = async () => {
+      try {
+        const data = await getStores();
+        setStores(data);
+      } catch (err) {
+        console.log(err);
+      }
+    };
+
+    loadStores();
+  }, []);
 
   return (
     <div className="stores-page">
@@ -57,4 +72,3 @@ const Stores = () => {
 };
 
 export default Stores;
-

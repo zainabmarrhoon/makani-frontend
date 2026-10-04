@@ -1,5 +1,7 @@
+
 import { useNavigate } from 'react-router';
 import { useState } from 'react';
+import { createStore } from '../../services/storeService';
 
 const CreateStore = () => {
   const navigate = useNavigate();
@@ -23,12 +25,15 @@ const CreateStore = () => {
     });
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
 
-    console.log(formData);
-
-    navigate('/stores');
+    try {
+      await createStore(formData);
+      navigate('/stores');
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   return (
@@ -46,7 +51,6 @@ const CreateStore = () => {
       <form onSubmit={handleSubmit}>
         <div>
           <label>Store Name</label>
-
           <input
             type="text"
             name="name"
@@ -59,7 +63,6 @@ const CreateStore = () => {
 
         <div>
           <label>Description</label>
-
           <textarea
             name="description"
             value={formData.description}
@@ -71,7 +74,6 @@ const CreateStore = () => {
 
         <div>
           <label>Phone</label>
-
           <input
             type="text"
             name="phone"
@@ -84,7 +86,6 @@ const CreateStore = () => {
 
         <div>
           <label>Email</label>
-
           <input
             type="email"
             name="email"
@@ -97,7 +98,6 @@ const CreateStore = () => {
 
         <div>
           <label>Address</label>
-
           <input
             type="text"
             name="address"
@@ -110,7 +110,6 @@ const CreateStore = () => {
 
         <div>
           <label>Store Logo</label>
-
           <input
             type="text"
             name="logo"
@@ -122,7 +121,6 @@ const CreateStore = () => {
 
         <div>
           <label>Store URL</label>
-
           <input
             type="text"
             name="slug"
