@@ -1,12 +1,16 @@
 import { useContext, useState } from 'react';
 import { useNavigate } from 'react-router';
-
 import { CartContext } from '../../contexts/CartContext';
+import { createOrder } from '../../services/orderService';
 
 const Checkout = () => {
   const navigate = useNavigate();
 
-  const { cartItems, total, clearCart } = useContext(CartContext);
+  const {
+    cartItems,
+    total,
+    clearCart
+  } = useContext(CartContext);
 
   const [formData, setFormData] = useState({
     customerName: '',
@@ -15,6 +19,7 @@ const Checkout = () => {
     paymentMethod: ''
   });
 
+  const [message, setMessage] = useState('');
   const [copied, setCopied] = useState(false);
 
   const iban = 'YOUR_IBAN_HERE';
@@ -29,25 +34,60 @@ const Checkout = () => {
   };
 
   const handleCopyIban = async () => {
-    await navigator.clipboard.writeText(iban);
-    setCopied(true);
+    try {
+      await navigator.clipboard.writeText(iban);
+      setCopied(true);
 
-    setTimeout(() => {
-      setCopied(false);
-    }, 2000);
+      setTimeout(() => {
+        setCopied(false);
+      }, 2000);
+    } catch (err) {
+      console.log(err);
+    }
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
 
-    console.log({
-      ...formData,
-      items: cartItems,
-      total
-    });
+    try {
+      setMessage('');
 
-    clearCart();
-    navigate('/order-success');
+      if (cartItems.length === 0) {
+        throw new Error('Your cart is empty');
+      }
+
+      const storeId = cartItems[0]?.store_id;
+
+      if (!storeId) {
+        throw new Error('Store information is missing');
+      }
+
+      const orderData = {
+        customer_name: formData.customerName,
+        customer_phone: formData.phone,
+        customer_address: formData.address,
+        payment_method: formData.paymentMethod,
+        products: cartItems.map((item) => ({
+          product_id: item.id,
+          quantity: item.quantity
+        }))
+      };
+
+      const order = await createOrder(
+        storeId,
+        orderData
+      );
+
+      clearCart();
+
+      navigate('/order-success', {
+        state: {
+          orderId: order.id
+        }
+      });
+    } catch (err) {
+      setMessage(err.message);
+    }
   };
 
   return (
@@ -60,7 +100,12 @@ const Checkout = () => {
       </button>
 
       <h1>Checkout</h1>
-      <p>Enter your details to place your order.</p>
+
+      <p>
+        Enter your details to place your order.
+      </p>
+
+      {message && <p>{message}</p>}
 
       <div className="checkout-summary">
         <h2>Order Summary</h2>
@@ -72,17 +117,22 @@ const Checkout = () => {
             </p>
 
             <p>
-              {(Number(item.price) * item.quantity).toFixed(2)} BHD
+              {(
+                Number(item.price) * item.quantity
+              ).toFixed(2)} BHD
             </p>
           </div>
         ))}
 
-        <h3>Total: {total.toFixed(2)} BHD</h3>
+        <h3>
+          Total: {total.toFixed(2)} BHD
+        </h3>
       </div>
 
       <form onSubmit={handleSubmit}>
         <div>
           <label>Full Name</label>
+
           <input
             type="text"
             name="customerName"
@@ -95,6 +145,7 @@ const Checkout = () => {
 
         <div>
           <label>Phone</label>
+
           <input
             type="text"
             name="phone"
@@ -107,6 +158,7 @@ const Checkout = () => {
 
         <div>
           <label>Address</label>
+
           <textarea
             name="address"
             value={formData.address}
@@ -125,7 +177,9 @@ const Checkout = () => {
             onChange={handleChange}
             required
           >
-            <option value="">Select payment method</option>
+            <option value="">
+              Select payment method
+            </option>
 
             <option value="cash_on_delivery">
               Cash on Delivery
@@ -142,7 +196,8 @@ const Checkout = () => {
             <h2>BenefitPay Payment</h2>
 
             <p>
-              Transfer the order amount to the following IBAN:
+              Transfer the order amount to the
+              following IBAN:
             </p>
 
             <div>
@@ -157,7 +212,8 @@ const Checkout = () => {
             </div>
 
             <p>
-              After completing the payment, upload your payment proof.
+              After completing the payment,
+              upload your payment proof.
             </p>
 
             <label>Payment Proof</label>

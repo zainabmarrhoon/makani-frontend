@@ -1,26 +1,41 @@
-import { useNavigate } from 'react-router';
+import { useLocation, useNavigate } from 'react-router';
 
 const OrderSuccess = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const orderId = location.state?.orderId;
 
   return (
     <div className="order-success-page">
       <h1>Order Placed Successfully</h1>
 
       <p>
-        Thank you for your order. Your order has been received.
+        Thank you for your order. Your order has
+        been received.
       </p>
+
+      {orderId && (
+        <p>
+          Order #{orderId}
+        </p>
+      )}
 
       <p>
-        You can track your order status using your order details.
+        You can track your order status using
+        your order details.
       </p>
 
-      <button
-        type="button"
-        onClick={() => navigate('/orders')}
-      >
-        View My Orders
-      </button>
+      {orderId && (
+        <button
+          type="button"
+          onClick={() =>
+            navigate(`/orders/${orderId}/track`)
+          }
+        >
+          Track Order
+        </button>
+      )}
 
       <button
         type="button"

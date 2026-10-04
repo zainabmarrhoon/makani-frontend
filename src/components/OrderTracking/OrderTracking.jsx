@@ -1,64 +1,133 @@
+import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router';
+import {
+  getOrder,
+  updateOrderStatus
+} from '../../services/orderService';
 
 const OrderTracking = () => {
   const navigate = useNavigate();
   const { orderId } = useParams();
 
-  const order = null;
+  const [order, setOrder] = useState(null);
+  const [message, setMessage] = useState('');
+
+  useEffect(() => {
+    const loadOrder = async () => {
+      try {
+        const data = await getOrder(orderId);
+        setOrder(data);
+      } catch (err) {
+        setMessage(err.message);
+      }
+    };
+
+    loadOrder();
+  }, [orderId]);
+
+  const handleStatusChange = async (status) => {
+    try {
+      setMessage('');
+
+      const updatedOrder = await updateOrderStatus(
+        orderId,
+        status
+      );
+
+      setOrder(updatedOrder);
+    } catch (err) {
+      setMessage(err.message);
+    }
+  };
+
+  if (message && !order) {
+    return (
+      <div className="order-tracking-page">
+        <p>{message}</p>
+
+        <button
+          type="button"
+          onClick={() => navigate(-1)}
+        >
+          Back
+        </button>
+      </div>
+    );
+  }
+
+  if (!order) {
+    return (
+      <div className="order-tracking-page">
+        <p>Loading order...</p>
+      </div>
+    );
+  }
+
+  const statuses = [
+    'pending',
+    'confirmed',
+    'preparing',
+    'ready',
+    'delivered'
+  ];
 
   return (
     <div className="order-tracking-page">
       <button
         type="button"
-        onClick={() => navigate('/orders')}
+        onClick={() => navigate(-1)}
       >
-        Back to My Orders
+        Back
       </button>
 
-      <h1>Track Your Order</h1>
+      <h1>Order #{order.id}</h1>
 
-      {order === null ? (
-        <div className="order-tracking-empty">
-          <h2>Order #{orderId}</h2>
+      <p>
+        Customer: {order.customer_name}
+      </p>
 
-          <p>
-            Order tracking information will appear here.
-          </p>
-        </div>
-      ) : (
-        <div className="order-tracking-content">
-          <h2>Order #{order.id}</h2>
+      <p>
+        Phone: {order.customer_phone}
+      </p>
 
-          <p>Status: {order.status}</p>
+      <p>
+        Address: {order.customer_address}
+      </p>
 
-          <div className="order-status">
-            <div>
-              <span>1</span>
-              <p>Pending</p>
-            </div>
+      <p>
+        Total:{' '}
+        {Number(order.total_amount).toFixed(2)} BHD
+      </p>
 
-            <div>
-              <span>2</span>
-              <p>Confirmed</p>
-            </div>
+      <p>
+        Payment Method: {order.payment_method}
+      </p>
 
-            <div>
-              <span>3</span>
-              <p>Preparing</p>
-            </div>
+      <p>
+        Current Status: {order.status}
+      </p>
 
-            <div>
-              <span>4</span>
-              <p>Ready</p>
-            </div>
+      {message && <p>{message}</p>}
 
-            <div>
-              <span>5</span>
-              <p>Delivered</p>
-            </div>
+      <h2>Order Status</h2>
+
+      <div className="order-status-list">
+        {statuses.map((status) => (
+          <div key={status}>
+            <p>{status}</p>
+
+            <button
+              type="button"
+              onClick={() => handleStatusChange(status)}
+              disabled={order.status === status}
+            >
+              {order.status === status
+                ? 'Current Status'
+                : `Set ${status}`}
+            </button>
           </div>
-        </div>
-      )}
+        ))}
+      </div>
     </div>
   );
 };
