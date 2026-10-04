@@ -17,16 +17,16 @@ const OrderSuccess = () => {
 
       <button
         type="button"
-        onClick={() => navigate('/')}
+        onClick={() => navigate('/orders')}
       >
-        Back to Home
+        View My Orders
       </button>
 
       <button
         type="button"
-        onClick={() => navigate('/cart')}
+        onClick={() => navigate('/')}
       >
-        View Cart
+        Back to Home
       </button>
     </div>
   );

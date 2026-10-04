@@ -2,6 +2,7 @@ import { useNavigate } from 'react-router';
 
 const Products = () => {
   const navigate = useNavigate();
+
   const products = [];
 
   return (
@@ -15,6 +16,7 @@ const Products = () => {
         {products.length > 0 && (
           <button
             className="add-product-btn"
+            type="button"
             onClick={() => navigate('/products/create')}
           >
             Add New Product
@@ -25,10 +27,14 @@ const Products = () => {
       {products.length === 0 ? (
         <div className="products-empty">
           <h2>No products yet</h2>
-          <p>Add your first product to start selling.</p>
+
+          <p>
+            Add your first product to start selling.
+          </p>
 
           <button
             className="add-product-btn"
+            type="button"
             onClick={() => navigate('/products/create')}
           >
             Add Your First Product
@@ -37,12 +43,24 @@ const Products = () => {
       ) : (
         <div className="products-list">
           {products.map((product) => (
-            <div className="product-card" key={product.id}>
+            <div
+              className="product-card"
+              key={product.id}
+            >
               <h2>{product.name}</h2>
-              <p>{product.description}</p>
-              <p>{product.price} BHD</p>
 
-              <button>
+              <p>{product.description}</p>
+
+              <p>
+                {Number(product.price).toFixed(2)} BHD
+              </p>
+
+              <button
+                type="button"
+                onClick={() =>
+                  navigate(`/products/${product.id}`)
+                }
+              >
                 Manage Product
               </button>
             </div>

@@ -1,8 +1,12 @@
+import { useContext, useState } from 'react';
 import { useNavigate } from 'react-router';
-import { useState } from 'react';
+
+import { CartContext } from '../../contexts/CartContext';
 
 const Checkout = () => {
   const navigate = useNavigate();
+
+  const { cartItems, total, clearCart } = useContext(CartContext);
 
   const [formData, setFormData] = useState({
     customerName: '',
@@ -36,8 +40,13 @@ const Checkout = () => {
   const handleSubmit = (event) => {
     event.preventDefault();
 
-    console.log(formData);
+    console.log({
+      ...formData,
+      items: cartItems,
+      total
+    });
 
+    clearCart();
     navigate('/order-success');
   };
 
@@ -52,6 +61,24 @@ const Checkout = () => {
 
       <h1>Checkout</h1>
       <p>Enter your details to place your order.</p>
+
+      <div className="checkout-summary">
+        <h2>Order Summary</h2>
+
+        {cartItems.map((item) => (
+          <div key={item.id}>
+            <p>
+              {item.name} × {item.quantity}
+            </p>
+
+            <p>
+              {(Number(item.price) * item.quantity).toFixed(2)} BHD
+            </p>
+          </div>
+        ))}
+
+        <h3>Total: {total.toFixed(2)} BHD</h3>
+      </div>
 
       <form onSubmit={handleSubmit}>
         <div>
@@ -99,9 +126,11 @@ const Checkout = () => {
             required
           >
             <option value="">Select payment method</option>
+
             <option value="cash_on_delivery">
               Cash on Delivery
             </option>
+
             <option value="benefitpay">
               BenefitPay
             </option>
@@ -112,7 +141,9 @@ const Checkout = () => {
           <div className="benefitpay-payment">
             <h2>BenefitPay Payment</h2>
 
-            <p>Transfer the order amount to the following IBAN:</p>
+            <p>
+              Transfer the order amount to the following IBAN:
+            </p>
 
             <div>
               <span>{iban}</span>

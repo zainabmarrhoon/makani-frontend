@@ -3,7 +3,12 @@ import { useNavigate, useParams } from 'react-router';
 const StoreProducts = () => {
   const navigate = useNavigate();
   const { storeId } = useParams();
+
   const products = [];
+
+  const createProduct = () => {
+    navigate(`/products/create?storeId=${storeId}`);
+  };
 
   return (
     <div className="store-products-page">
@@ -22,7 +27,7 @@ const StoreProducts = () => {
 
         <button
           type="button"
-          onClick={() => navigate('/products/create')}
+          onClick={createProduct}
         >
           Add Product
         </button>
@@ -35,7 +40,7 @@ const StoreProducts = () => {
 
           <button
             type="button"
-            onClick={() => navigate('/products/create')}
+            onClick={createProduct}
           >
             Add Your First Product
           </button>
@@ -43,12 +48,24 @@ const StoreProducts = () => {
       ) : (
         <div className="store-products-list">
           {products.map((product) => (
-            <div className="product-card" key={product.id}>
+            <div
+              className="product-card"
+              key={product.id}
+            >
               <h2>{product.name}</h2>
-              <p>{product.description}</p>
-              <p>{product.price} BHD</p>
 
-              <button type="button">
+              <p>{product.description}</p>
+
+              <p>
+                {Number(product.price).toFixed(2)} BHD
+              </p>
+
+              <button
+                type="button"
+                onClick={() =>
+                  navigate(`/products/${product.id}`)
+                }
+              >
                 Manage Product
               </button>
             </div>

@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router';
 const StoreOrders = () => {
   const navigate = useNavigate();
   const { storeId } = useParams();
+
   const orders = [];
 
   return (
@@ -29,13 +30,30 @@ const StoreOrders = () => {
       ) : (
         <div className="store-orders-list">
           {orders.map((order) => (
-            <div className="order-card" key={order.id}>
+            <div
+              className="order-card"
+              key={order.id}
+            >
               <h2>Order #{order.id}</h2>
-              <p>Customer: {order.customer_name}</p>
-              <p>Total: {order.total_amount} BHD</p>
-              <p>Status: {order.status}</p>
 
-              <button type="button">
+              <p>
+                Customer: {order.customer_name}
+              </p>
+
+              <p>
+                Total: {Number(order.total_amount).toFixed(2)} BHD
+              </p>
+
+              <p>
+                Status: {order.status}
+              </p>
+
+              <button
+                type="button"
+                onClick={() =>
+                  navigate(`/orders/${order.id}/track`)
+                }
+              >
                 View Order
               </button>
             </div>

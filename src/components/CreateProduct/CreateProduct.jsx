@@ -1,8 +1,11 @@
-import { useNavigate } from 'react-router';
+import { useNavigate, useSearchParams } from 'react-router';
 import { useState } from 'react';
 
 const CreateProduct = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+
+  const storeId = searchParams.get('storeId');
 
   const [formData, setFormData] = useState({
     name: '',
@@ -21,82 +24,105 @@ const CreateProduct = () => {
   };
 
   const handleImagesChange = (event) => {
-    const imageUrls = event.target.value
+    const images = event.target.value
       .split(',')
       .map((image) => image.trim())
-      .filter((image) => image !== '');
+      .filter(Boolean);
 
     setFormData({
       ...formData,
-      images: imageUrls
+      images
     });
   };
 
   const handleSubmit = (event) => {
     event.preventDefault();
 
-    console.log(formData);
+    console.log({
+      ...formData,
+      storeId
+    });
+
+    navigate(`/stores/${storeId}/products`);
   };
 
   return (
     <div className="create-product-page">
       <button
         type="button"
-        onClick={() => navigate('/products')}
+        onClick={() =>
+          navigate(
+            storeId
+              ? `/stores/${storeId}/products`
+              : '/stores'
+          )
+        }
       >
-        Back to Products
+        Back
       </button>
 
-      <h1>Add New Product</h1>
-      <p>Add the details of your product.</p>
+      <h1>Create Product</h1>
 
       <form onSubmit={handleSubmit}>
         <div>
-          <label>Product Name</label>
+          <label htmlFor="name">Product Name</label>
+
           <input
             type="text"
+            id="name"
             name="name"
             value={formData.name}
             onChange={handleChange}
             placeholder="Enter product name"
+            required
           />
         </div>
 
         <div>
-          <label>Description</label>
+          <label htmlFor="description">Description</label>
+
           <textarea
+            id="description"
             name="description"
             value={formData.description}
             onChange={handleChange}
-            placeholder="Describe your product"
+            placeholder="Enter product description"
+            required
           />
         </div>
 
         <div>
-          <label>Price</label>
+          <label htmlFor="price">Price</label>
+
           <input
             type="number"
+            id="price"
             name="price"
             value={formData.price}
             onChange={handleChange}
-            placeholder="Enter product price"
+            placeholder="Enter price"
             min="0"
             step="0.01"
+            required
           />
         </div>
 
         <div>
-          <label>Product Images</label>
+          <label htmlFor="images">
+            Product Images
+          </label>
+
           <input
             type="text"
+            id="images"
+            name="images"
             onChange={handleImagesChange}
-            placeholder="image1 URL, image2 URL, image3 URL"
+            placeholder="Paste image URLs separated by commas"
           />
-          <p>Add multiple image URLs separated by commas.</p>
         </div>
 
         <button type="submit">
-          Add Product
+          Create Product
         </button>
       </form>
     </div>

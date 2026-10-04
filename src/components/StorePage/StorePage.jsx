@@ -1,8 +1,13 @@
+import { useContext } from 'react';
 import { useNavigate, useParams } from 'react-router';
+
+import { CartContext } from '../../contexts/CartContext';
 
 const StorePage = () => {
   const navigate = useNavigate();
   const { slug } = useParams();
+
+  const { addToCart } = useContext(CartContext);
 
   const products = [];
 
@@ -21,21 +26,33 @@ const StorePage = () => {
       ) : (
         <div className="store-products-grid">
           {products.map((product) => (
-            <div className="store-product-card" key={product.id}>
+            <div
+              className="store-product-card"
+              key={product.id}
+            >
               <img
                 src={product.images?.[0]}
                 alt={product.name}
               />
 
               <h2>{product.name}</h2>
+
               <p>{product.description}</p>
-              <p>{product.price} BHD</p>
+
+              <p>{Number(product.price).toFixed(2)} BHD</p>
 
               <button
                 type="button"
                 onClick={() => navigate(`/products/${product.id}`)}
               >
                 View Product
+              </button>
+
+              <button
+                type="button"
+                onClick={() => addToCart(product)}
+              >
+                Add to Cart
               </button>
             </div>
           ))}

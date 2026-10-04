@@ -20,6 +20,7 @@ import ProductDetails from './components/ProductDetails/ProductDetails';
 import Cart from './components/Cart/Cart';
 import Checkout from './components/Checkout/Checkout';
 import OrderSuccess from './components/OrderSuccess/OrderSuccess';
+import OrderTracking from './components/OrderTracking/OrderTracking';
 
 import { UserContext } from './contexts/UserContext';
 
@@ -46,6 +47,11 @@ const App = () => {
         <Route path='/cart' element={<Cart />} />
         <Route path='/checkout' element={<Checkout />} />
         <Route path='/order-success' element={<OrderSuccess />} />
+        <Route path='/order-success' element={<OrderSuccess />} />
+<Route
+  path='/orders/:orderId/track'
+  element={<OrderTracking />}
+/>
         
 
 

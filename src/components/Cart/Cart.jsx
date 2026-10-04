@@ -1,13 +1,18 @@
+import { useContext } from 'react';
 import { useNavigate } from 'react-router';
+
+import { CartContext } from '../../contexts/CartContext';
 
 const Cart = () => {
   const navigate = useNavigate();
-  const cartItems = [];
 
-  const total = cartItems.reduce(
-    (sum, item) => sum + item.price * item.quantity,
-    0
-  );
+  const {
+    cartItems,
+    increaseQuantity,
+    decreaseQuantity,
+    removeFromCart,
+    total
+  } = useContext(CartContext);
 
   return (
     <div className="cart-page">
@@ -20,13 +25,6 @@ const Cart = () => {
         <div className="cart-empty">
           <h2>Your cart is empty</h2>
           <p>Add products from a store to see them here.</p>
-
-          <button
-            type="button"
-            onClick={() => navigate('/stores')}
-          >
-            Browse Stores
-          </button>
         </div>
       ) : (
         <div className="cart-content">
@@ -34,15 +32,31 @@ const Cart = () => {
             {cartItems.map((item) => (
               <div className="cart-item" key={item.id}>
                 <h2>{item.name}</h2>
-                <p>{item.price} BHD</p>
+
+                <p>{Number(item.price).toFixed(2)} BHD</p>
 
                 <div>
-                  <button type="button">-</button>
+                  <button
+                    type="button"
+                    onClick={() => decreaseQuantity(item.id)}
+                  >
+                    -
+                  </button>
+
                   <span>{item.quantity}</span>
-                  <button type="button">+</button>
+
+                  <button
+                    type="button"
+                    onClick={() => increaseQuantity(item.id)}
+                  >
+                    +
+                  </button>
                 </div>
 
-                <button type="button">
+                <button
+                  type="button"
+                  onClick={() => removeFromCart(item.id)}
+                >
                   Remove
                 </button>
               </div>
@@ -51,6 +65,7 @@ const Cart = () => {
 
           <div className="cart-summary">
             <h2>Order Summary</h2>
+
             <p>Total: {total.toFixed(2)} BHD</p>
 
             <button

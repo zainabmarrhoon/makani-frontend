@@ -1,10 +1,20 @@
+import { useContext } from 'react';
 import { useNavigate, useParams } from 'react-router';
+
+import { CartContext } from '../../contexts/CartContext';
 
 const ProductDetails = () => {
   const navigate = useNavigate();
   const { productId } = useParams();
 
+  const { addToCart } = useContext(CartContext);
+
   const product = null;
+
+  const handleAddToCart = () => {
+    addToCart(product);
+    navigate('/cart');
+  };
 
   return (
     <div className="product-details-page">
@@ -38,7 +48,10 @@ const ProductDetails = () => {
             <p>{product.description}</p>
             <p>{product.price} BHD</p>
 
-            <button type="button">
+            <button
+              type="button"
+              onClick={handleAddToCart}
+            >
               Add to Cart
             </button>
           </div>

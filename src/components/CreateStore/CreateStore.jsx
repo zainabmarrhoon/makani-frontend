@@ -27,6 +27,8 @@ const CreateStore = () => {
     event.preventDefault();
 
     console.log(formData);
+
+    navigate('/stores');
   };
 
   return (
@@ -44,60 +46,71 @@ const CreateStore = () => {
       <form onSubmit={handleSubmit}>
         <div>
           <label>Store Name</label>
+
           <input
             type="text"
             name="name"
             value={formData.name}
             onChange={handleChange}
             placeholder="Enter your store name"
+            required
           />
         </div>
 
         <div>
           <label>Description</label>
+
           <textarea
             name="description"
             value={formData.description}
             onChange={handleChange}
             placeholder="Tell customers about your store"
+            required
           />
         </div>
 
         <div>
           <label>Phone</label>
+
           <input
             type="text"
             name="phone"
             value={formData.phone}
             onChange={handleChange}
             placeholder="Enter your phone number"
+            required
           />
         </div>
 
         <div>
           <label>Email</label>
+
           <input
             type="email"
             name="email"
             value={formData.email}
             onChange={handleChange}
             placeholder="Enter your store email"
+            required
           />
         </div>
 
         <div>
           <label>Address</label>
+
           <input
             type="text"
             name="address"
             value={formData.address}
             onChange={handleChange}
             placeholder="Enter your store address"
+            required
           />
         </div>
 
         <div>
           <label>Store Logo</label>
+
           <input
             type="text"
             name="logo"
@@ -109,12 +122,14 @@ const CreateStore = () => {
 
         <div>
           <label>Store URL</label>
+
           <input
             type="text"
             name="slug"
             value={formData.slug}
             onChange={handleChange}
             placeholder="your-store-name"
+            required
           />
         </div>
 
