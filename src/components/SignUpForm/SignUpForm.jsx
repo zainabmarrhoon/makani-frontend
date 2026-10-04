@@ -1,37 +1,50 @@
 import { useContext, useState } from 'react';
 import { useNavigate } from 'react-router';
 
-// Services
 import * as authService from '../../services/authService';
 import { UserContext } from '../../contexts/UserContext';
-
 
 const SignUpForm = () => {
   const navigate = useNavigate();
   const [message, setMessage] = useState('');
+
   const [formData, setFormData] = useState({
     username: '',
     email: '',
     password: '',
-    passwordConf: '',
+    passwordConf: ''
   });
+
   const { setUser } = useContext(UserContext);
 
   const { username, email, password, passwordConf } = formData;
 
   const handleChange = (evt) => {
     setMessage('');
-    setFormData({ ...formData, [evt.target.name]: evt.target.value });
+
+    setFormData({
+      ...formData,
+      [evt.target.name]: evt.target.value
+    });
   };
 
   const handleSubmit = async (evt) => {
     evt.preventDefault();
 
-    const payload = { username, email, password };
-    const user = await authService.signUp(payload)
+    try {
+      const payload = {
+        username,
+        email,
+        password
+      };
 
-    setUser(user); // this line will print the form data to the console
-    navigate('/')
+      const user = await authService.signUp(payload);
+
+      setUser(user);
+      navigate('/');
+    } catch (err) {
+      setMessage(err.message);
+    }
   };
 
   const isFormInvalid = () => {
@@ -41,9 +54,10 @@ const SignUpForm = () => {
   return (
     <main>
       <h1>Sign Up</h1>
+
       <p>{message}</p>
+
       <form onSubmit={handleSubmit}>
-        {/* Username Field */}
         <div>
           <label htmlFor='username'>Username:</label>
           <input
@@ -56,7 +70,6 @@ const SignUpForm = () => {
           />
         </div>
 
-        {/* Email Field */}
         <div>
           <label htmlFor='email'>Email:</label>
           <input
@@ -69,7 +82,6 @@ const SignUpForm = () => {
           />
         </div>
 
-        {/* Password Field */}
         <div>
           <label htmlFor='password'>Password:</label>
           <input
@@ -82,7 +94,6 @@ const SignUpForm = () => {
           />
         </div>
 
-        {/* Coinfirm Password */}
         <div>
           <label htmlFor='confirm'>Confirm Password:</label>
           <input
@@ -95,10 +106,17 @@ const SignUpForm = () => {
           />
         </div>
 
-        {/* Form Actions */}
         <div>
-          <button disabled={isFormInvalid()}>Sign Up</button>
-          <button onClick={() => navigate('/')}>Cancel</button>
+          <button type='submit' disabled={isFormInvalid()}>
+            Sign Up
+          </button>
+
+          <button
+            type='button'
+            onClick={() => navigate('/')}
+          >
+            Cancel
+          </button>
         </div>
       </form>
     </main>
