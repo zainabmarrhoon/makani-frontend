@@ -1,4 +1,3 @@
-
 import { useContext, useState } from 'react';
 import { useNavigate } from 'react-router';
 
@@ -7,6 +6,8 @@ import { UserContext } from '../../contexts/UserContext';
 
 const SignUpForm = () => {
   const navigate = useNavigate();
+  const { setUser } = useContext(UserContext);
+
   const [message, setMessage] = useState('');
 
   const [formData, setFormData] = useState({
@@ -16,23 +17,28 @@ const SignUpForm = () => {
     passwordConf: ''
   });
 
-  const { setUser } = useContext(UserContext);
+  const {
+    username,
+    email,
+    password,
+    passwordConf
+  } = formData;
 
-  const { username, email, password, passwordConf } = formData;
-
-  const handleChange = (evt) => {
+  const handleChange = (event) => {
     setMessage('');
 
     setFormData({
       ...formData,
-      [evt.target.name]: evt.target.value
+      [event.target.name]: event.target.value
     });
   };
 
-  const handleSubmit = async (evt) => {
-    evt.preventDefault();
+  const handleSubmit = async (event) => {
+    event.preventDefault();
 
     try {
+      setMessage('');
+
       const payload = {
         username,
         email,
@@ -42,84 +48,128 @@ const SignUpForm = () => {
       const user = await authService.signUp(payload);
 
       setUser(user);
-      navigate('/stores');
+      navigate('/');
     } catch (err) {
       setMessage(err.message);
     }
   };
 
   const isFormInvalid = () => {
-    return !(username && email && password && password === passwordConf);
+    return !(
+      username &&
+      email &&
+      password &&
+      password === passwordConf
+    );
   };
 
   return (
-    <main>
-      <h1>Sign Up</h1>
+    <main className="auth-page">
+      <div className="auth-content">
+        <p className="auth-eyebrow">CREATE YOUR ACCOUNT</p>
 
-      <p>{message}</p>
+        <h1>Sign Up</h1>
 
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label htmlFor='username'>Username:</label>
-          <input
-            type='text'
-            id='username'
-            value={username}
-            name='username'
-            onChange={handleChange}
-            required
-          />
-        </div>
+        <p className="auth-subtitle">
+          Create your account and start building your Makani store.
+        </p>
 
-        <div>
-          <label htmlFor='email'>Email:</label>
-          <input
-            type='email'
-            id='email'
-            value={email}
-            name='email'
-            onChange={handleChange}
-            required
-          />
-        </div>
+        <form
+          className="auth-form"
+          autoComplete="off"
+          onSubmit={handleSubmit}
+        >
+          {message && (
+            <p className="auth-message" role="alert">
+              {message}
+            </p>
+          )}
 
-        <div>
-          <label htmlFor='password'>Password:</label>
-          <input
-            type='password'
-            id='password'
-            value={password}
-            name='password'
-            onChange={handleChange}
-            required
-          />
-        </div>
+          <div className="auth-field">
+            <label htmlFor="username">
+              Username
+            </label>
 
-        <div>
-          <label htmlFor='confirm'>Confirm Password:</label>
-          <input
-            type='password'
-            id='confirm'
-            value={passwordConf}
-            name='passwordConf'
-            onChange={handleChange}
-            required
-          />
-        </div>
+            <input
+              type="text"
+              id="username"
+              name="username"
+              value={username}
+              onChange={handleChange}
+              autoComplete="username"
+              placeholder="Choose a username"
+              required
+            />
+          </div>
 
-        <div>
-          <button type='submit' disabled={isFormInvalid()}>
-            Sign Up
+          <div className="auth-field">
+            <label htmlFor="email">
+              Email
+            </label>
+
+            <input
+              type="email"
+              id="email"
+              name="email"
+              value={email}
+              onChange={handleChange}
+              autoComplete="email"
+              placeholder="Enter your email"
+              required
+            />
+          </div>
+
+          <div className="auth-field">
+            <label htmlFor="password">
+              Password
+            </label>
+
+            <input
+              type="password"
+              id="password"
+              name="password"
+              value={password}
+              onChange={handleChange}
+              autoComplete="new-password"
+              placeholder="Create a password"
+              required
+            />
+          </div>
+
+          <div className="auth-field">
+            <label htmlFor="passwordConf">
+              Confirm Password
+            </label>
+
+            <input
+              type="password"
+              id="passwordConf"
+              name="passwordConf"
+              value={passwordConf}
+              onChange={handleChange}
+              autoComplete="new-password"
+              placeholder="Confirm your password"
+              required
+            />
+          </div>
+
+          <button
+            type="submit"
+            className="auth-submit"
+            disabled={isFormInvalid()}
+          >
+            Create Account
           </button>
 
           <button
-            type='button'
+            type="button"
+            className="auth-secondary"
             onClick={() => navigate('/')}
           >
-            Cancel
+            Back to Home
           </button>
-        </div>
-      </form>
+        </form>
+      </div>
     </main>
   );
 };

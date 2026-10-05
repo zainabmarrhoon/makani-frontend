@@ -1,4 +1,4 @@
-import { useState, useContext } from 'react';
+import { useContext, useState } from 'react';
 import { useNavigate } from 'react-router';
 
 import { signIn } from '../../services/authService';
@@ -9,25 +9,26 @@ const SignInForm = () => {
   const { setUser } = useContext(UserContext);
 
   const [message, setMessage] = useState('');
-
   const [formData, setFormData] = useState({
     username: '',
     password: ''
   });
 
-  const handleChange = (evt) => {
+  const handleChange = (event) => {
     setMessage('');
 
     setFormData({
       ...formData,
-      [evt.target.name]: evt.target.value
+      [event.target.name]: event.target.value
     });
   };
 
-  const handleSubmit = async (evt) => {
-    evt.preventDefault();
+  const handleSubmit = async (event) => {
+    event.preventDefault();
 
     try {
+      setMessage('');
+
       const signedInUser = await signIn(formData);
 
       setUser(signedInUser);
@@ -38,51 +39,70 @@ const SignInForm = () => {
   };
 
   return (
-    <main>
-      <h1>Sign In</h1>
+    <main className="auth-page">
+      <div className="auth-content">
+        <p className="auth-eyebrow">WELCOME BACK</p>
 
-      <p>{message}</p>
+        <h1>Sign In</h1>
 
-      <form autoComplete='off' onSubmit={handleSubmit}>
-        <div>
-          <label htmlFor='username'>Username:</label>
+        <p className="auth-subtitle">
+          Sign in to manage your Makani store.
+        </p>
 
-          <input
-            type='text'
-            autoComplete='off'
-            id='username'
-            value={formData.username}
-            name='username'
-            onChange={handleChange}
-            required
-          />
-        </div>
+        <form className="auth-form" autoComplete="off" onSubmit={handleSubmit}>
+          {message && (
+            <p className="auth-message" role="alert">
+              {message}
+            </p>
+          )}
 
-        <div>
-          <label htmlFor='password'>Password:</label>
+          <div className="auth-field">
+            <label htmlFor="username">
+              Username
+            </label>
 
-          <input
-            type='password'
-            autoComplete='off'
-            id='password'
-            value={formData.password}
-            name='password'
-            onChange={handleChange}
-            required
-          />
-        </div>
+            <input
+              type="text"
+              id="username"
+              name="username"
+              value={formData.username}
+              onChange={handleChange}
+              autoComplete="username"
+              placeholder="Enter your username"
+              required
+            />
+          </div>
 
-        <div>
-          <button type='submit'>Sign In</button>
+          <div className="auth-field">
+            <label htmlFor="password">
+              Password
+            </label>
+
+            <input
+              type="password"
+              id="password"
+              name="password"
+              value={formData.password}
+              onChange={handleChange}
+              autoComplete="current-password"
+              placeholder="Enter your password"
+              required
+            />
+          </div>
+
+          <button type="submit" className="auth-submit">
+            Sign In
+          </button>
 
           <button
-            type='button'
-            onClick={() => navigate('/stores')}
+            type="button"
+            className="auth-secondary"
+            onClick={() => navigate('/')}
           >
-            Cancel
+            Back to Home
           </button>
-        </div>
-      </form>
+        </form>
+      </div>
     </main>
   );
 };
