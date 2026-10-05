@@ -20,7 +20,7 @@ const getResponseData = async (res) => {
 
 const signUp = async (formData) => {
   try {
-    const res = await fetch(`${BASE_URL}/signup`, {
+    const res = await fetch(`${BASE_URL}/register`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
