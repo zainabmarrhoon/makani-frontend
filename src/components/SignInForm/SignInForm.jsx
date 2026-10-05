@@ -77,7 +77,7 @@ const SignInForm = () => {
 
           <button
             type='button'
-            onClick={() => navigate('/')}
+            onClick={() => navigate('/stores')}
           >
             Cancel
           </button>
