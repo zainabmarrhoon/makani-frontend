@@ -33,7 +33,7 @@ const StoreOrders = () => {
 
       <div className="store-orders-header">
         <h1>Store Orders</h1>
-        <p>View and manage orders for this store.</p>
+        <p>View and manage orders for this store</p>
       </div>
 
       {message && <p>{message}</p>}
@@ -41,7 +41,7 @@ const StoreOrders = () => {
       {orders.length === 0 ? (
         <div className="orders-empty">
           <h2>No orders yet</h2>
-          <p>Orders for this store will appear here.</p>
+          <p>Orders for this store will appear here</p>
         </div>
       ) : (
         <div className="store-orders-list">
@@ -58,9 +58,17 @@ const StoreOrders = () => {
                 {Number(order.total_amount).toFixed(2)} BHD
               </p>
 
-              <p>
-                Status: {order.status}
-              </p>
+              <div className="order-status-row">
+            <span className="order-status-label">
+                Status
+             </span>
+
+             <span
+                className={`order-status-badge status-${order.status}`}
+               >
+                {order.status}
+             </span>
+             </div>
 
               <button
                 type="button"

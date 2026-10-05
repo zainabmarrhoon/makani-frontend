@@ -71,7 +71,7 @@ const SignUpForm = () => {
         <h1>Sign Up</h1>
 
         <p className="auth-subtitle">
-          Create your account and start building your Makani store.
+          Create your account and start building your Makani store
         </p>
 
         <form
