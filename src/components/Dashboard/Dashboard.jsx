@@ -3,31 +3,118 @@ import { Link } from 'react-router';
 
 import { UserContext } from '../../contexts/UserContext';
 import { getStores } from '../../services/storeService';
+import { getStoreProducts } from '../../services/productService';
+import { getStoreOrders } from '../../services/orderService';
+import {
+  getStoreNotifications
+} from '../../services/notificationService';
 
 const Dashboard = () => {
   const { user } = useContext(UserContext);
 
   const [stores, setStores] = useState([]);
+  const [productsCount, setProductsCount] = useState(0);
+  const [ordersCount, setOrdersCount] = useState(0);
+  const [notificationsCount, setNotificationsCount] = useState(0);
+
   const [isLoading, setIsLoading] = useState(true);
+  const [isProductsLoading, setIsProductsLoading] = useState(true);
+  const [isOrdersLoading, setIsOrdersLoading] = useState(true);
+  const [isNotificationsLoading, setIsNotificationsLoading] =
+    useState(true);
 
   useEffect(() => {
-    const loadStores = async () => {
+    const loadDashboardData = async () => {
       try {
-        const data = await getStores();
+        const storesDataResponse = await getStores();
 
-        const storesData = Array.isArray(data)
-          ? data
-          : data.stores || [];
+        const storesData = Array.isArray(storesDataResponse)
+          ? storesDataResponse
+          : storesDataResponse.stores || [];
 
         setStores(storesData);
+
+        if (storesData.length === 0) {
+          setProductsCount(0);
+          setOrdersCount(0);
+          setNotificationsCount(0);
+          return;
+        }
+
+        const [
+          productsResponses,
+          ordersResponses,
+          notificationsResponses
+        ] = await Promise.all([
+          Promise.all(
+            storesData.map((store) =>
+              getStoreProducts(store.id)
+            )
+          ),
+
+          Promise.all(
+            storesData.map((store) =>
+              getStoreOrders(store.id)
+            )
+          ),
+
+          Promise.all(
+            storesData.map((store) =>
+              getStoreNotifications(store.id)
+            )
+          )
+        ]);
+
+        const totalProducts = productsResponses.reduce(
+          (total, productsResponse) => {
+            const products = Array.isArray(productsResponse)
+              ? productsResponse
+              : productsResponse.products || [];
+
+            return total + products.length;
+          },
+          0
+        );
+
+        const totalOrders = ordersResponses.reduce(
+          (total, ordersResponse) => {
+            const orders = Array.isArray(ordersResponse)
+              ? ordersResponse
+              : ordersResponse.orders || [];
+
+            return total + orders.length;
+          },
+          0
+        );
+
+        const totalNotifications =
+          notificationsResponses.reduce(
+            (total, notificationsResponse) => {
+              const notifications = Array.isArray(
+                notificationsResponse
+              )
+                ? notificationsResponse
+                : notificationsResponse.notifications || [];
+
+              return total + notifications.length;
+            },
+            0
+          );
+
+        setProductsCount(totalProducts);
+        setOrdersCount(totalOrders);
+        setNotificationsCount(totalNotifications);
       } catch (error) {
         console.log(error);
       } finally {
         setIsLoading(false);
+        setIsProductsLoading(false);
+        setIsOrdersLoading(false);
+        setIsNotificationsLoading(false);
       }
     };
 
-    loadStores();
+    loadDashboardData();
   }, []);
 
   return (
@@ -39,7 +126,7 @@ const Dashboard = () => {
           </p>
 
           <h1>
-            Welcome back,
+            Welcome back
             <br />
             <span>{user?.username}</span>
           </h1>
@@ -62,7 +149,9 @@ const Dashboard = () => {
         </article>
 
         <article className="dashboard-stat-card">
-          <span className="dashboard-stat-number">—</span>
+          <span className="dashboard-stat-number">
+            {isProductsLoading ? '...' : productsCount}
+          </span>
 
           <span className="dashboard-stat-label">
             Products
@@ -70,7 +159,9 @@ const Dashboard = () => {
         </article>
 
         <article className="dashboard-stat-card">
-          <span className="dashboard-stat-number">—</span>
+          <span className="dashboard-stat-number">
+            {isOrdersLoading ? '...' : ordersCount}
+          </span>
 
           <span className="dashboard-stat-label">
             Orders
@@ -78,7 +169,11 @@ const Dashboard = () => {
         </article>
 
         <article className="dashboard-stat-card">
-          <span className="dashboard-stat-number">—</span>
+          <span className="dashboard-stat-number">
+            {isNotificationsLoading
+              ? '...'
+              : notificationsCount}
+          </span>
 
           <span className="dashboard-stat-label">
             Notifications
@@ -104,92 +199,43 @@ const Dashboard = () => {
             to="/stores/create"
             className="dashboard-action dashboard-action-primary"
           >
-            <span className="dashboard-action-icon">
-              +
-            </span>
-
-            <div>
-              <h3>Create a Store</h3>
-
-              <p>
-                Set up your online store and start selling.
-              </p>
-            </div>
-
-            <span className="dashboard-action-arrow">
-              →
-            </span>
+            <span>+</span>
+            Create a Store
           </Link>
 
           <Link
             to="/stores"
             className="dashboard-action"
           >
-            <span className="dashboard-action-icon">
-              01
-            </span>
-
-            <div>
-              <h3>My Stores</h3>
-
-              <p>
-                View and manage your existing stores.
-              </p>
-            </div>
-
-            <span className="dashboard-action-arrow">
-              →
-            </span>
+            <span>01</span>
+            My Stores
           </Link>
 
           <Link
             to="/products"
             className="dashboard-action"
           >
-            <span className="dashboard-action-icon">
-              02
-            </span>
-
-            <div>
-              <h3>Products</h3>
-
-              <p>
-                Manage the products available in your stores.
-              </p>
-            </div>
-
-            <span className="dashboard-action-arrow">
-              →
-            </span>
+            <span>02</span>
+            Products
           </Link>
         </div>
       </section>
 
       <section className="dashboard-bottom">
-        <div className="dashboard-info-card">
+        <div>
           <p className="dashboard-section-eyebrow">
             YOUR SPACE
           </p>
 
           <h2>
-            Everything your business needs,
-            <br />
-            in one place.
+            Create. Manage. Grow.
           </h2>
-
-          <p>
-            Makani gives you a simple space to manage your online
-            business without having to build a store from scratch.
-          </p>
         </div>
 
-        <div className="dashboard-number">
-          <span>01</span>
-
-          <p>CREATE</p>
-          <p>MANAGE</p>
-          <p>GROW</p>
-        </div>
+        <p>
+          Makani gives you one place to manage your online
+          store and keep everything organized.
+        </p>
       </section>
     </main>
   );

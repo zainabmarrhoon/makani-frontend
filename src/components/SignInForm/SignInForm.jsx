@@ -46,7 +46,7 @@ const SignInForm = () => {
         <h1>Sign In</h1>
 
         <p className="auth-subtitle">
-          Sign in to manage your Makani store.
+          Sign in to manage your Makani store
         </p>
 
         <form className="auth-form" autoComplete="off" onSubmit={handleSubmit}>
