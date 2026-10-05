@@ -7,13 +7,13 @@ const Landing = () => {
     <main className="landing-page">
       <section className="landing-hero">
         <div className="landing-hero-content">
-          <p className="landing-label">YOUR STORE. YOUR WAY.</p>
+          <p className="landing-label">YOUR STORE IN YOUR WAY .. </p>
 
           <h1>Build Your Online Store with Makani</h1>
 
           <p className="landing-hero-text">
             Create, manage, and grow your online store without
-            building a website from scratch.
+            building a website from scratch
           </p>
 
           <div className="landing-hero-actions">
@@ -42,7 +42,7 @@ const Landing = () => {
 
           <p>
             Everything you need to create and manage your online
-            store in one place.
+            store in one place 
           </p>
         </div>
 
@@ -54,7 +54,7 @@ const Landing = () => {
 
             <p>
               Set up your store with your business information and
-              create your unique store URL.
+              create your unique store URL
             </p>
           </div>
 
@@ -65,7 +65,7 @@ const Landing = () => {
 
             <p>
               Add your products, descriptions, prices, and images
-              to your online store.
+              to your online store
             </p>
           </div>
 
@@ -76,7 +76,7 @@ const Landing = () => {
 
             <p>
               Share your unique store link with customers and start
-              receiving orders.
+              receiving orders
             </p>
           </div>
         </div>
@@ -90,7 +90,7 @@ const Landing = () => {
 
           <p>
             Makani gives business owners the tools they need to
-            manage their online store in one place.
+            manage their online store in one place
           </p>
         </div>
 
@@ -100,7 +100,7 @@ const Landing = () => {
 
             <p>
               Create a store that represents your business with
-              your own store information and branding.
+              your own store information and branding
             </p>
           </div>
 
@@ -109,7 +109,7 @@ const Landing = () => {
 
             <p>
               Easily add, update, and manage the products available
-              in your store.
+              in your store
             </p>
           </div>
 
@@ -118,7 +118,7 @@ const Landing = () => {
 
             <p>
               View customer orders and manage their status from
-              one place.
+              one place
             </p>
           </div>
 
@@ -127,7 +127,7 @@ const Landing = () => {
 
             <p>
               Give customers a simple way to follow the progress
-              of their orders.
+              of their orders
             </p>
           </div>
 
@@ -136,7 +136,7 @@ const Landing = () => {
 
             <p>
               Allow customers to submit their BenefitPay payment
-              proof when placing an order.
+              proof when placing an order
             </p>
           </div>
 
@@ -145,7 +145,7 @@ const Landing = () => {
 
             <p>
               Give your business a direct link that customers can
-              use to visit your online store.
+              use to visit your online store
             </p>
           </div>
         </div>
@@ -159,7 +159,7 @@ const Landing = () => {
 
           <p>
             Create your store, add your products, and start building
-            your online presence with Makani.
+            your online presence with Makani
           </p>
 
           <button

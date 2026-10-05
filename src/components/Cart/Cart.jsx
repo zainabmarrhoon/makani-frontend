@@ -18,13 +18,13 @@ const Cart = () => {
     <div className="cart-page">
       <div className="cart-header">
         <h1>Your Cart</h1>
-        <p>Review your products before checkout.</p>
+        <p>Review your products before checkout</p>
       </div>
 
       {cartItems.length === 0 ? (
         <div className="cart-empty">
           <h2>Your cart is empty</h2>
-          <p>Add products from a store to see them here.</p>
+          <p>Add products from a store to see them here</p>
         </div>
       ) : (
         <div className="cart-content">

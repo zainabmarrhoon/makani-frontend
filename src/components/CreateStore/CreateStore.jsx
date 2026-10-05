@@ -46,7 +46,7 @@ const CreateStore = () => {
       </button>
 
       <h1>Create Your Store</h1>
-      <p>Set up your store information to get started.</p>
+      <p>Set up your store information to get started</p>
 
       <form onSubmit={handleSubmit}>
         <div>

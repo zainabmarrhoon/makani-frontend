@@ -15,7 +15,7 @@ const StoreDetails = () => {
 
       <div className="store-details-header">
         <h1>Store Details</h1>
-        <p>Manage your store.</p>
+        <p>Manage your store</p>
       </div>
 
       <div className="store-details-actions">

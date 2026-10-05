@@ -66,7 +66,7 @@ const StoreProducts = () => {
         <h1>Store Products</h1>
 
         <p>
-          Manage the products in your store.
+          Manage the products in your store
         </p>
 
         <button
@@ -85,7 +85,7 @@ const StoreProducts = () => {
 
           <p>
             Create your first product to start
-            selling.
+            selling
           </p>
 
           <button

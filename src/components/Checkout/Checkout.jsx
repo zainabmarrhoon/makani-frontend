@@ -78,6 +78,27 @@ const Checkout = () => {
         orderData
       );
 
+      const savedOrders =
+        JSON.parse(localStorage.getItem('orders')) || [];
+
+      const newOrder = {
+        ...order,
+        customer_name: formData.customerName,
+        customer_phone: formData.phone,
+        customer_address: formData.address,
+        payment_method: formData.paymentMethod,
+        total_amount: order.total_amount ?? total,
+        status: order.status ?? 'pending'
+      };
+
+      localStorage.setItem(
+        'orders',
+        JSON.stringify([
+          newOrder,
+          ...savedOrders
+        ])
+      );
+
       clearCart();
 
       navigate('/order-success', {

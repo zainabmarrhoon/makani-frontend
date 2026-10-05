@@ -55,7 +55,7 @@ const Notifications = () => {
 
       <div className="notifications-header">
         <h1>Notifications</h1>
-        <p>Stay updated with your store orders.</p>
+        <p>Stay updated with your store orders</p>
       </div>
 
       {message && <p>{message}</p>}
@@ -64,7 +64,7 @@ const Notifications = () => {
         <div className="notifications-empty">
           <h2>No notifications</h2>
           <p>
-            New order notifications will appear here.
+            New order notifications will appear here
           </p>
         </div>
       ) : (

@@ -11,8 +11,8 @@ const OrderSuccess = () => {
       <h1>Order Placed Successfully</h1>
 
       <p>
-        Thank you for your order. Your order has
-        been received.
+        Thank you for your order, Your order has
+        been received
       </p>
 
       {orderId && (
@@ -23,7 +23,7 @@ const OrderSuccess = () => {
 
       <p>
         You can track your order status using
-        your order details.
+        your order details ..
       </p>
 
       {orderId && (

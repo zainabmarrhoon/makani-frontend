@@ -59,7 +59,7 @@ const CreateProduct = () => {
       <h1>Create Product</h1>
 
       <p>
-        Add a new product to your store.
+        Add a new product to your store
       </p>
 
       {message && <p>{message}</p>}
