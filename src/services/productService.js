@@ -1,3 +1,4 @@
+
 const BASE_URL = import.meta.env.VITE_BACK_END_SERVER_URL;
 
 const getStoreProducts = async (storeId) => {
@@ -28,15 +29,24 @@ const getStoreProducts = async (storeId) => {
 
 const createProduct = async (storeId, formData) => {
   try {
+    const dataToSend = new FormData();
+
+    dataToSend.append('name', formData.name);
+    dataToSend.append('description', formData.description);
+    dataToSend.append('price', formData.price);
+
+    if (formData.image) {
+      dataToSend.append('image', formData.image);
+    }
+
     const res = await fetch(
       `${BASE_URL}/stores/${storeId}/products`,
       {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
           Authorization: `Bearer ${localStorage.getItem('token')}`
         },
-        body: JSON.stringify(formData)
+        body: dataToSend
       }
     );
 
@@ -78,15 +88,24 @@ const getProduct = async (productId) => {
 
 const updateProduct = async (productId, formData) => {
   try {
+    const dataToSend = new FormData();
+
+    dataToSend.append('name', formData.name);
+    dataToSend.append('description', formData.description);
+    dataToSend.append('price', formData.price);
+
+    if (formData.image) {
+      dataToSend.append('image', formData.image);
+    }
+
     const res = await fetch(
       `${BASE_URL}/products/${productId}`,
       {
         method: 'PUT',
         headers: {
-          'Content-Type': 'application/json',
           Authorization: `Bearer ${localStorage.getItem('token')}`
         },
-        body: JSON.stringify(formData)
+        body: dataToSend
       }
     );
 

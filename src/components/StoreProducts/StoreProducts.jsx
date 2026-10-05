@@ -1,9 +1,12 @@
+
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router';
 import {
   getStoreProducts,
   deleteProduct
 } from '../../services/productService';
+
+const BASE_URL = import.meta.env.VITE_BACK_END_SERVER_URL;
 
 const StoreProducts = () => {
   const navigate = useNavigate();
@@ -104,7 +107,7 @@ const StoreProducts = () => {
             >
               {product.image && (
                 <img
-                  src={product.image}
+                  src={`${BASE_URL}/${product.image}`}
                   alt={product.name}
                 />
               )}
@@ -154,3 +157,4 @@ const StoreProducts = () => {
 };
 
 export default StoreProducts;
+

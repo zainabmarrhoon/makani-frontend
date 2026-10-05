@@ -1,9 +1,12 @@
+
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router';
 import {
   getProduct,
   updateProduct
 } from '../../services/productService';
+
+const BASE_URL = import.meta.env.VITE_BACK_END_SERVER_URL;
 
 const EditProduct = () => {
   const navigate = useNavigate();
@@ -13,9 +16,10 @@ const EditProduct = () => {
     name: '',
     description: '',
     price: '',
-    image: ''
+    image: null
   });
 
+  const [currentImage, setCurrentImage] = useState('');
   const [storeId, setStoreId] = useState(null);
   const [message, setMessage] = useState('');
 
@@ -28,9 +32,10 @@ const EditProduct = () => {
           name: product.name || '',
           description: product.description || '',
           price: product.price || '',
-          image: product.image || ''
+          image: null
         });
 
+        setCurrentImage(product.image || '');
         setStoreId(product.store_id);
       } catch (err) {
         setMessage(err.message);
@@ -41,11 +46,11 @@ const EditProduct = () => {
   }, [productId]);
 
   const handleChange = (event) => {
-    const { name, value } = event.target;
+    const { name, value, files } = event.target;
 
     setFormData({
       ...formData,
-      [name]: value
+      [name]: files ? files[0] : value
     });
   };
 
@@ -55,12 +60,7 @@ const EditProduct = () => {
     try {
       setMessage('');
 
-      await updateProduct(productId, {
-        name: formData.name,
-        description: formData.description,
-        price: formData.price,
-        image: formData.image
-      });
+      await updateProduct(productId, formData);
 
       if (storeId) {
         navigate(`/stores/${storeId}/products`);
@@ -123,14 +123,26 @@ const EditProduct = () => {
           />
         </div>
 
+        {currentImage && (
+          <div>
+            <label>Current Image</label>
+
+            <img
+              src={`${BASE_URL}/${currentImage}`}
+              alt={formData.name}
+              width="150"
+            />
+          </div>
+        )}
+
         <div>
-          <label>Image URL</label>
+          <label>Change Product Image</label>
 
           <input
-            type="text"
+            type="file"
             name="image"
-            value={formData.image}
             onChange={handleChange}
+            accept="image/jpeg,image/png,image/webp"
           />
         </div>
 
@@ -143,3 +155,4 @@ const EditProduct = () => {
 };
 
 export default EditProduct;
+

@@ -1,13 +1,13 @@
-import { useEffect, useState, useContext } from 'react';
+
+import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router';
-import { CartContext } from '../../contexts/CartContext';
 import { getProduct } from '../../services/productService';
+
+const BASE_URL = import.meta.env.VITE_BACK_END_SERVER_URL;
 
 const ProductDetails = () => {
   const navigate = useNavigate();
   const { productId } = useParams();
-
-  const { addToCart } = useContext(CartContext);
 
   const [product, setProduct] = useState(null);
   const [message, setMessage] = useState('');
@@ -24,11 +24,6 @@ const ProductDetails = () => {
 
     loadProduct();
   }, [productId]);
-
-  const handleAddToCart = () => {
-    addToCart(product);
-    navigate('/cart');
-  };
 
   if (message) {
     return (
@@ -55,12 +50,16 @@ const ProductDetails = () => {
         Back
       </button>
 
-      {product.image && (
-        <img
-          src={product.image}
-          alt={product.name}
-        />
-      )}
+      <div className="product-details-image">
+        {product.image ? (
+          <img
+            src={`${BASE_URL}/${product.image}`}
+            alt={product.name}
+          />
+        ) : (
+          <span>No image available</span>
+        )}
+      </div>
 
       <h1>{product.name}</h1>
 
@@ -69,15 +68,9 @@ const ProductDetails = () => {
       <p>
         {Number(product.price).toFixed(2)} BHD
       </p>
-
-      <button
-        type="button"
-        onClick={handleAddToCart}
-      >
-        Add to Cart
-      </button>
     </div>
   );
 };
 
 export default ProductDetails;
+
