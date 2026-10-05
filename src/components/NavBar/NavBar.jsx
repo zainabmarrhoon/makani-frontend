@@ -27,13 +27,15 @@ const NavBar = () => {
         <ul>
           {user ? (
             <>
-              <li className="navbar-user">
-                Hello {user.username}
-              </li>
-
               <li>
                 <Link to="/">
                   Dashboard
+                </Link>
+              </li>
+
+              <li>
+                <Link to="/stores">
+                  My Stores
                 </Link>
               </li>
 
@@ -48,12 +50,6 @@ const NavBar = () => {
             </>
           ) : (
             <>
-              <li>
-                <Link to="/">
-                  Dashboard
-                </Link>
-              </li>
-
               <li>
                 <Link to="/sign-up">
                   Sign Up

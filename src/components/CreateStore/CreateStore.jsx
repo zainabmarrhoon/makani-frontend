@@ -38,11 +38,12 @@ const CreateStore = () => {
 
   return (
     <div className="create-store-page">
-      <button
+     <button
         type="button"
+        className="back-page-button"
         onClick={() => navigate('/stores')}
-      >
-        Back to My Stores
+       >
+         Back to My Stores
       </button>
 
       <h1>Create Your Store</h1>

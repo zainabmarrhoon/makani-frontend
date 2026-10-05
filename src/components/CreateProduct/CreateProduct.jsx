@@ -48,12 +48,11 @@ const CreateProduct = () => {
   return (
     <div className="create-product-page">
       <button
-        type="button"
-        onClick={() =>
-          navigate(`/stores/${storeId}/products`)
-        }
-      >
-        Back to Products
+         type="button"
+         className="back-page-button"
+         onClick={() => navigate('/products')}
+         >
+           Back to Products
       </button>
 
       <h1>Create Product</h1>
