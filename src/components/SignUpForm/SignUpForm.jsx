@@ -1,3 +1,4 @@
+
 import { useContext, useState } from 'react';
 import { useNavigate } from 'react-router';
 
@@ -41,7 +42,7 @@ const SignUpForm = () => {
       const user = await authService.signUp(payload);
 
       setUser(user);
-      navigate('/');
+      navigate('/stores');
     } catch (err) {
       setMessage(err.message);
     }
