@@ -1,4 +1,3 @@
-
 const BASE_URL = import.meta.env.VITE_BACK_END_SERVER_URL;
 
 const getStores = async () => {
@@ -46,7 +45,29 @@ const createStore = async (formData) => {
   }
 };
 
+const getPublicStore = async (slug) => {
+  try {
+    const res = await fetch(
+      `${BASE_URL}/public/stores/${slug}`
+    );
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      throw new Error(
+        data.detail || 'Failed to get store'
+      );
+    }
+
+    return data;
+  } catch (err) {
+    console.log(err);
+    throw err;
+  }
+};
+
 export {
   getStores,
-  createStore
+  createStore,
+  getPublicStore
 };

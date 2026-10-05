@@ -10,7 +10,7 @@ const Products = () => {
       <div className="products-header">
         <div>
           <h1>Products</h1>
-          <p>Manage your store products.</p>
+          <p>Manage your store products</p>
         </div>
 
         {products.length > 0 && (
@@ -29,7 +29,7 @@ const Products = () => {
           <h2>No products yet</h2>
 
           <p>
-            Add your first product to start selling.
+            Add your first product to start selling
           </p>
 
           <button

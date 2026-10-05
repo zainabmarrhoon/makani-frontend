@@ -1,17 +1,23 @@
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
 
 const Orders = () => {
   const navigate = useNavigate();
 
-  const orders = [];
+  const [orders, setOrders] = useState([]);
+
+  useEffect(() => {
+    const savedOrders =
+      JSON.parse(localStorage.getItem('orders')) || [];
+
+    setOrders(savedOrders);
+  }, []);
 
   return (
     <div className="orders-page">
       <div className="orders-header">
-        <div>
-          <h1>My Orders</h1>
-          <p>View and track your orders.</p>
-        </div>
+        <h1>My Orders</h1>
+        <p>View and track your orders</p>
       </div>
 
       {orders.length === 0 ? (
@@ -19,7 +25,8 @@ const Orders = () => {
           <h2>No orders yet</h2>
 
           <p>
-            Your orders will appear here after you place an order.
+            Your orders will appear here after you
+            place an order
           </p>
 
           <button
@@ -39,7 +46,8 @@ const Orders = () => {
               <h2>Order #{order.id}</h2>
 
               <p>
-                Total: {Number(order.total_amount).toFixed(2)} BHD
+                Total:{' '}
+                {Number(order.total_amount).toFixed(2)} BHD
               </p>
 
               <p>
@@ -49,7 +57,9 @@ const Orders = () => {
               <button
                 type="button"
                 onClick={() =>
-                  navigate(`/orders/${order.id}/track`)
+                  navigate(
+                    `/orders/${order.id}/track`
+                  )
                 }
               >
                 Track Order

@@ -1,0 +1,68 @@
+@import './App.css';
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  background: #f7f1e8;
+  color: #302124;
+  font-family: Georgia, 'Times New Roman', serif;
+}
+
+body,
+button,
+input,
+textarea,
+select {
+  font-family: Georgia, 'Times New Roman', serif;
+}
+
+button,
+input,
+textarea,
+select {
+  font-size: 15px;
+}
+
+button {
+  cursor: pointer;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+img {
+  display: block;
+  max-width: 100%;
+}
+
+::selection {
+  background: #7b1731;
+  color: #fffaf4;
+}
+
+::-webkit-scrollbar {
+  width: 9px;
+}
+
+::-webkit-scrollbar-track {
+  background: #eee5d9;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #7b1731;
+  border-radius: 20px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #5e1025;
+}

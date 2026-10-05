@@ -1,12 +1,13 @@
-import { useNavigate, useSearchParams } from 'react-router';
-import { useState } from 'react';
-import { createProduct } from '../../services/productService';
+import { useEffect, useState } from 'react';
+import { useNavigate, useParams } from 'react-router';
+import {
+  getProduct,
+  updateProduct
+} from '../../services/productService';
 
-const CreateProduct = () => {
+const EditProduct = () => {
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
-
-  const storeId = searchParams.get('storeId');
+  const { productId } = useParams();
 
   const [formData, setFormData] = useState({
     name: '',
@@ -15,7 +16,29 @@ const CreateProduct = () => {
     image: ''
   });
 
+  const [storeId, setStoreId] = useState(null);
   const [message, setMessage] = useState('');
+
+  useEffect(() => {
+    const loadProduct = async () => {
+      try {
+        const product = await getProduct(productId);
+
+        setFormData({
+          name: product.name || '',
+          description: product.description || '',
+          price: product.price || '',
+          image: product.image || ''
+        });
+
+        setStoreId(product.store_id);
+      } catch (err) {
+        setMessage(err.message);
+      }
+    };
+
+    loadProduct();
+  }, [productId]);
 
   const handleChange = (event) => {
     const { name, value } = event.target;
@@ -32,35 +55,33 @@ const CreateProduct = () => {
     try {
       setMessage('');
 
-      await createProduct(storeId, {
+      await updateProduct(productId, {
         name: formData.name,
         description: formData.description,
         price: formData.price,
         image: formData.image
       });
 
-      navigate(`/stores/${storeId}/products`);
+      if (storeId) {
+        navigate(`/stores/${storeId}/products`);
+      } else {
+        navigate(-1);
+      }
     } catch (err) {
       setMessage(err.message);
     }
   };
 
   return (
-    <div className="create-product-page">
+    <div className="edit-product-page">
       <button
         type="button"
-        onClick={() =>
-          navigate(`/stores/${storeId}/products`)
-        }
+        onClick={() => navigate(-1)}
       >
-        Back to Products
+        Back
       </button>
 
-      <h1>Create Product</h1>
-
-      <p>
-        Add a new product to your store
-      </p>
+      <h1>Edit Product</h1>
 
       {message && <p>{message}</p>}
 
@@ -73,7 +94,6 @@ const CreateProduct = () => {
             name="name"
             value={formData.name}
             onChange={handleChange}
-            placeholder="Enter product name"
             required
           />
         </div>
@@ -85,7 +105,6 @@ const CreateProduct = () => {
             name="description"
             value={formData.description}
             onChange={handleChange}
-            placeholder="Describe your product"
             required
           />
         </div>
@@ -98,7 +117,6 @@ const CreateProduct = () => {
             name="price"
             value={formData.price}
             onChange={handleChange}
-            placeholder="Enter product price"
             step="0.01"
             min="0"
             required
@@ -113,16 +131,15 @@ const CreateProduct = () => {
             name="image"
             value={formData.image}
             onChange={handleChange}
-            placeholder="Enter image URL"
           />
         </div>
 
         <button type="submit">
-          Create Product
+          Save Changes
         </button>
       </form>
     </div>
   );
 };
 
-export default CreateProduct;
+export default EditProduct;

@@ -1,10 +1,60 @@
+import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router';
+import { getOrder } from '../../services/orderService';
 
 const OrderTracking = () => {
   const navigate = useNavigate();
   const { orderId } = useParams();
 
-  const order = null;
+  const [order, setOrder] = useState(null);
+  const [message, setMessage] = useState('');
+
+  useEffect(() => {
+    const loadOrder = async () => {
+      try {
+        const data = await getOrder(orderId);
+        setOrder(data);
+      } catch (err) {
+        setMessage(err.message);
+      }
+    };
+
+    loadOrder();
+  }, [orderId]);
+
+  if (message) {
+    return (
+      <div className="order-tracking-page">
+        <button
+          type="button"
+          onClick={() => navigate('/orders')}
+        >
+          Back to Orders
+        </button>
+
+        <p>{message}</p>
+      </div>
+    );
+  }
+
+  if (!order) {
+    return (
+      <div className="order-tracking-page">
+        <p>Loading order...</p>
+      </div>
+    );
+  }
+
+  const statuses = [
+    'pending',
+    'confirmed',
+    'preparing',
+    'ready',
+    'delivered'
+  ];
+
+  const currentStatusIndex =
+    statuses.indexOf(order.status);
 
   return (
     <div className="order-tracking-page">
@@ -12,51 +62,60 @@ const OrderTracking = () => {
         type="button"
         onClick={() => navigate('/orders')}
       >
-        Back to My Orders
+        Back to Orders
       </button>
 
-      <h1>Track Your Order</h1>
+      <div className="order-tracking-header">
+        <h1>Order #{order.id}</h1>
 
-      {order === null ? (
-        <div className="order-tracking-empty">
-          <h2>Order #{orderId}</h2>
+        <p>
+          Total:{' '}
+          {Number(order.total_amount).toFixed(2)} BHD
+        </p>
+
+        <p>
+          Current Status: {order.status}
+        </p>
+      </div>
+
+      <div className="order-status-timeline">
+        {statuses.map((status, index) => {
+          const isCompleted =
+            currentStatusIndex >= index;
+
+          const isCurrent =
+            order.status === status;
+
+          return (
+            <div
+              className="order-status-step"
+              key={status}
+            >
+              <h2>{status}</h2>
+
+              {isCompleted && (
+                <p>
+                  {isCurrent
+                    ? 'Current status'
+                    : 'Completed'}
+                </p>
+              )}
+
+              {!isCompleted && (
+                <p>Waiting</p>
+              )}
+            </div>
+          );
+        })}
+      </div>
+
+      {order.status === 'cancelled' && (
+        <div className="order-cancelled">
+          <h2>Order Cancelled</h2>
 
           <p>
-            Order tracking information will appear here.
+            This order has been cancelled
           </p>
-        </div>
-      ) : (
-        <div className="order-tracking-content">
-          <h2>Order #{order.id}</h2>
-
-          <p>Status: {order.status}</p>
-
-          <div className="order-status">
-            <div>
-              <span>1</span>
-              <p>Pending</p>
-            </div>
-
-            <div>
-              <span>2</span>
-              <p>Confirmed</p>
-            </div>
-
-            <div>
-              <span>3</span>
-              <p>Preparing</p>
-            </div>
-
-            <div>
-              <span>4</span>
-              <p>Ready</p>
-            </div>
-
-            <div>
-              <span>5</span>
-              <p>Delivered</p>
-            </div>
-          </div>
         </div>
       )}
     </div>
