@@ -1,3 +1,4 @@
+
 import { useContext, useState } from 'react';
 import { useNavigate, useParams } from 'react-router';
 import { CartContext } from '../../contexts/CartContext';
@@ -20,6 +21,7 @@ const Checkout = () => {
     paymentMethod: ''
   });
 
+  const [paymentProof, setPaymentProof] = useState(null);
   const [message, setMessage] = useState('');
   const [copied, setCopied] = useState(false);
 
@@ -32,6 +34,12 @@ const Checkout = () => {
       ...formData,
       [name]: value
     });
+  };
+
+  const handlePaymentProofChange = (event) => {
+    setPaymentProof(
+      event.target.files[0] || null
+    );
   };
 
   const handleCopyIban = async () => {
@@ -63,6 +71,15 @@ const Checkout = () => {
         throw new Error('Store information is missing');
       }
 
+      if (
+        formData.paymentMethod === 'benefitpay' &&
+        !paymentProof
+      ) {
+        throw new Error(
+          'Please upload your payment proof'
+        );
+      }
+
       const orderData = {
         customer_name: formData.customerName,
         customer_phone: formData.phone,
@@ -76,7 +93,8 @@ const Checkout = () => {
 
       const order = await createOrder(
         storeId,
-        orderData
+        orderData,
+        paymentProof
       );
 
       const savedOrders =
@@ -250,7 +268,8 @@ const Checkout = () => {
 
             <input
               type="file"
-              accept="image/*"
+              accept="image/jpeg,image/png,image/webp"
+              onChange={handlePaymentProofChange}
               required
             />
 

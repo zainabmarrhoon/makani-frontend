@@ -2,7 +2,9 @@ import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router';
 import {
   getStore,
-  updateStore
+  updateStore,
+  uploadHeroImage,
+  getPreviewStore
 } from '../../services/storeService';
 import { getStoreProducts } from '../../services/productService';
 
@@ -16,6 +18,8 @@ const StoreDetails = () => {
   const [products, setProducts] = useState([]);
   const [message, setMessage] = useState('');
   const [saving, setSaving] = useState(false);
+  const [heroImage, setHeroImage] = useState(null);
+  const [logo, setLogo] = useState(null);
 
   const [settings, setSettings] = useState({
     show_home: true,
@@ -80,15 +84,31 @@ const StoreDetails = () => {
     });
   };
 
+  const handleHeroImageChange = (event) => {
+    setHeroImage(event.target.files[0] || null);
+  };
+
+  const handleLogoChange = (event) => {
+    setLogo(event.target.files[0] || null);
+  };
+
   const handleSave = async () => {
     try {
       setSaving(true);
       setMessage('');
 
-      const updatedStore = await updateStore(
+      let updatedStore = await updateStore(
         storeId,
         settings
       );
+
+      if (heroImage) {
+        updatedStore = await uploadHeroImage(
+          storeId,
+          heroImage
+        );
+        setHeroImage(null);
+      }
 
       setStore(updatedStore);
 
@@ -105,13 +125,21 @@ const StoreDetails = () => {
       setSaving(true);
       setMessage('');
 
-      const updatedStore = await updateStore(
+      let updatedStore = await updateStore(
         storeId,
         {
           ...settings,
           status: 'published'
         }
       );
+
+      if (heroImage) {
+        updatedStore = await uploadHeroImage(
+          storeId,
+          heroImage
+        );
+        setHeroImage(null);
+      }
 
       setStore(updatedStore);
 
@@ -123,17 +151,18 @@ const StoreDetails = () => {
     }
   };
 
-  const handlePreview = () => {
-    if (!store) {
-      return;
-    }
+const handlePreview = async () => {
+  try {
+    const previewStore = await getPreviewStore(storeId);
 
     window.open(
-      `/store/${store.slug}`,
+      `/store/${previewStore.slug}?preview=true&storeId=${storeId}`,
       '_blank'
     );
-  };
-
+  } catch (err) {
+    setMessage(err.message);
+  }
+};
   if (message && !store) {
     return (
       <div className="store-builder">
@@ -152,7 +181,9 @@ const StoreDetails = () => {
 
   return (
     <div className="store-builder">
+
       <div className="store-builder-toolbar">
+
         <button
           type="button"
           onClick={() => navigate('/stores')}
@@ -161,6 +192,7 @@ const StoreDetails = () => {
         </button>
 
         <div className="store-builder-toolbar-actions">
+
           <button
             type="button"
             onClick={handlePreview}
@@ -175,6 +207,7 @@ const StoreDetails = () => {
           >
             {saving ? 'Saving...' : 'Publish'}
           </button>
+
         </div>
       </div>
 
@@ -184,12 +217,21 @@ const StoreDetails = () => {
         </p>
       )}
 
-      <div className="store-builder-layout">
-        <aside className="store-builder-sidebar">
-          <h2>Store Builder</h2>
+      <main className="store-builder-form-container">
 
-          <div className="builder-settings">
-            <h3>Sections</h3>
+        <form
+          className="store-builder-form"
+          onSubmit={(event) => {
+            event.preventDefault();
+            handleSave();
+          }}
+        >
+
+          <h1>Store Builder</h1>
+
+          <section className="builder-form-section">
+
+            <h2>Store Sections</h2>
 
             <label>
               <input
@@ -240,13 +282,67 @@ const StoreDetails = () => {
               />
               Cart
             </label>
-          </div>
 
-          <div className="builder-settings">
-            <h3>Hero Section</h3>
+          </section>
+
+          <section className="builder-form-section">
+
+            <h2>Store Logo</h2>
+
+            <label>
+              Upload Logo
+
+              <input
+                type="file"
+                accept="image/jpeg,image/png,image/webp"
+                onChange={handleLogoChange}
+              />
+            </label>
+
+            {logo && (
+              <p>
+                Selected: {logo.name}
+              </p>
+            )}
+
+            {store.logo && !logo && (
+              <p>
+                Current logo: {store.logo.split('/').pop()}
+              </p>
+            )}
+
+          </section>
+
+          <section className="builder-form-section">
+
+            <h2>Hero Section</h2>
+
+            <label>
+              Hero Image
+
+              <input
+                type="file"
+                accept="image/jpeg,image/png,image/webp"
+                onChange={handleHeroImageChange}
+              />
+            </label>
+
+            {heroImage && (
+              <p>
+                Selected: {heroImage.name}
+              </p>
+            )}
+
+            {store.hero_image && !heroImage && (
+              <p>
+                Current hero image:{' '}
+                {store.hero_image.split('/').pop()}
+              </p>
+            )}
 
             <label>
               Hero Title
+
               <input
                 type="text"
                 name="hero_title"
@@ -257,6 +353,7 @@ const StoreDetails = () => {
 
             <label>
               Hero Description
+
               <textarea
                 name="hero_description"
                 value={settings.hero_description}
@@ -266,6 +363,7 @@ const StoreDetails = () => {
 
             <label>
               Button Text
+
               <input
                 type="text"
                 name="hero_button_text"
@@ -273,13 +371,16 @@ const StoreDetails = () => {
                 onChange={handleSettingChange}
               />
             </label>
-          </div>
 
-          <div className="builder-settings">
-            <h3>About Section</h3>
+          </section>
+
+          <section className="builder-form-section">
+
+            <h2>About Section</h2>
 
             <label>
               About Title
+
               <input
                 type="text"
                 name="about_title"
@@ -290,250 +391,28 @@ const StoreDetails = () => {
 
             <label>
               About Description
+
               <textarea
                 name="about_description"
                 value={settings.about_description}
                 onChange={handleSettingChange}
               />
             </label>
-          </div>
+
+          </section>
 
           <button
-            type="button"
+            type="submit"
             className="save-builder-button"
-            onClick={handleSave}
             disabled={saving}
           >
             {saving ? 'Saving...' : 'Save Changes'}
           </button>
-        </aside>
 
-        <main className="store-builder-preview">
-          <div className="store-template">
+        </form>
 
-            <header className="store-template-header">
-              {store.logo && (
-                <img
-                  className="store-template-logo"
-                  src={`${BASE_URL}/${store.logo}`}
-                  alt={store.name}
-                />
-              )}
+      </main>
 
-              <nav className="store-template-nav">
-                {settings.show_home && (
-                  <a href="#home">Home</a>
-                )}
-
-                {settings.show_products && (
-                  <a href="#products">Products</a>
-                )}
-
-                {settings.show_about && (
-                  <a href="#about">About</a>
-                )}
-
-                {settings.show_contact && (
-                  <a href="#contact">Contact</a>
-                )}
-
-                {settings.show_cart && (
-                  <a href="#cart">Cart</a>
-                )}
-              </nav>
-            </header>
-
-            {store.hero_image && (
-              <section className="store-template-hero-image">
-                <img
-                  src={`${BASE_URL}/${store.hero_image}`}
-                  alt={`${store.name} hero`}
-                />
-              </section>
-            )}
-
-            {settings.show_home && (
-              <section
-                id="home"
-                className="store-template-home"
-              >
-                <button type="button">
-                  {settings.hero_button_text || 'Shop Now'}
-                </button>
-              </section>
-            )}
-
-            {settings.show_products && (
-              <section
-                id="products"
-                className="store-template-products"
-              >
-                <div className="store-template-section-header">
-                  <div>
-                    <h2>Products</h2>
-
-                    <p>
-                      Explore our products
-                    </p>
-                  </div>
-
-                  <button
-                    type="button"
-                    onClick={() =>
-                      navigate(
-                        `/products/create?storeId=${storeId}`
-                      )
-                    }
-                  >
-                    + Add Product
-                  </button>
-                </div>
-
-                {products.length === 0 ? (
-                  <div className="store-template-empty">
-                    <h3>No products yet</h3>
-
-                    <p>
-                      Add your first product to start
-                      building your store.
-                    </p>
-
-                    <button
-                      type="button"
-                      onClick={() =>
-                        navigate(
-                          `/products/create?storeId=${storeId}`
-                        )
-                      }
-                    >
-                      Add Your First Product
-                    </button>
-                  </div>
-                ) : (
-                  <div className="store-template-product-grid">
-                    {products.map((product) => (
-                      <div
-                        className="store-template-product-card"
-                        key={product.id}
-                      >
-                        <div className="store-template-product-image">
-                          {product.image ? (
-                            <img
-                              src={`${BASE_URL}/${product.image}`}
-                              alt={product.name}
-                            />
-                          ) : (
-                            <span>
-                              Product Image
-                            </span>
-                          )}
-                        </div>
-
-                        <h3>{product.name}</h3>
-
-                        <p>
-                          {Number(product.price).toFixed(2)} BHD
-                        </p>
-
-                        <button type="button">
-                          Add to Cart
-                        </button>
-
-                        <div className="store-template-product-actions">
-                          <button
-                            type="button"
-                            onClick={() =>
-                              navigate(
-                                `/products/${product.id}/edit`
-                              )
-                            }
-                          >
-                            Edit
-                          </button>
-
-                          <button
-                            type="button"
-                            onClick={() =>
-                              navigate(
-                                `/products/${product.id}`
-                              )
-                            }
-                          >
-                            View
-                          </button>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </section>
-            )}
-
-            {settings.show_about && (
-              <section
-                id="about"
-                className="store-template-about"
-              >
-                <h2>{settings.about_title}</h2>
-
-                <p>
-                  {settings.about_description}
-                </p>
-              </section>
-            )}
-
-            {settings.show_contact && (
-              <section
-                id="contact"
-                className="store-template-contact"
-              >
-                <h2>Contact</h2>
-
-                {store.phone && (
-                  <p>
-                    Phone: {store.phone}
-                  </p>
-                )}
-
-                {store.email && (
-                  <p>
-                    Email: {store.email}
-                  </p>
-                )}
-
-                {store.address && (
-                  <p>
-                    Address: {store.address}
-                  </p>
-                )}
-              </section>
-            )}
-
-            {settings.show_cart && (
-              <section
-                id="cart"
-                className="store-template-cart"
-              >
-                <h2>Your Cart</h2>
-
-                <p>
-                  Your customers will see their
-                  selected products here.
-                </p>
-              </section>
-            )}
-
-            <footer className="store-template-footer">
-              <h3>{store.name}</h3>
-
-              <p>
-                © 2026 {store.name}. All rights reserved.
-              </p>
-            </footer>
-
-          </div>
-        </main>
-      </div>
     </div>
   );
 };

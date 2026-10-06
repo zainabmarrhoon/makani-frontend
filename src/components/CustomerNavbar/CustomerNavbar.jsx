@@ -1,19 +1,33 @@
-import { useNavigate, useParams } from 'react-router';
 import { useEffect, useState } from 'react';
-import { getPublicStore } from '../../services/storeService';
+import {
+  useNavigate,
+  useParams,
+  useSearchParams
+} from 'react-router';
+import {
+  getPublicStore,
+  getPreviewStore
+} from '../../services/storeService';
 
 const BASE_URL = import.meta.env.VITE_BACK_END_SERVER_URL;
 
 const CustomerNavbar = () => {
   const navigate = useNavigate();
   const { slug } = useParams();
+  const [searchParams] = useSearchParams();
 
   const [store, setStore] = useState(null);
+
+  const isPreview = searchParams.get('preview') === 'true';
+  const previewStoreId = searchParams.get('storeId');
 
   useEffect(() => {
     const loadStore = async () => {
       try {
-        const data = await getPublicStore(slug);
+        const data = isPreview && previewStoreId
+          ? await getPreviewStore(previewStoreId)
+          : await getPublicStore(slug);
+
         setStore(data);
       } catch (err) {
         console.log(err);
@@ -21,11 +35,17 @@ const CustomerNavbar = () => {
     };
 
     loadStore();
-  }, [slug]);
+  }, [slug, isPreview, previewStoreId]);
 
   if (!store) {
     return null;
   }
+
+  const previewQuery = isPreview
+    ? `?preview=true&storeId=${previewStoreId}`
+    : '';
+
+  const storeUrl = `/store/${store.slug}`;
 
   return (
     <header className="customer-navbar">
@@ -42,7 +62,9 @@ const CustomerNavbar = () => {
         {store.show_home && (
           <button
             type="button"
-            onClick={() => navigate(`/store/${store.slug}`)}
+            onClick={() =>
+              navigate(`${storeUrl}${previewQuery}`)
+            }
           >
             Home
           </button>
@@ -52,7 +74,9 @@ const CustomerNavbar = () => {
           <button
             type="button"
             onClick={() =>
-              navigate(`/store/${store.slug}/products`)
+              navigate(
+                `${storeUrl}/products${previewQuery}`
+              )
             }
           >
             Products
@@ -63,7 +87,9 @@ const CustomerNavbar = () => {
           <button
             type="button"
             onClick={() =>
-              navigate(`/store/${store.slug}#about`)
+              navigate(
+                `${storeUrl}/about${previewQuery}`
+              )
             }
           >
             About
@@ -74,7 +100,9 @@ const CustomerNavbar = () => {
           <button
             type="button"
             onClick={() =>
-              navigate(`/store/${store.slug}#contact`)
+              navigate(
+                `${storeUrl}/contact${previewQuery}`
+              )
             }
           >
             Contact
@@ -85,7 +113,9 @@ const CustomerNavbar = () => {
           <button
             type="button"
             onClick={() =>
-              navigate(`/store/${store.slug}/cart`)
+              navigate(
+                `${storeUrl}/cart${previewQuery}`
+              )
             }
           >
             Cart

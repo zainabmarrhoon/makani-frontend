@@ -1,8 +1,10 @@
+
 import { useContext } from 'react';
 import { Route, Routes, useLocation, Outlet } from 'react-router';
 
 import NavBar from './components/NavBar/NavBar';
 import CustomerNavbar from './components/CustomerNavbar/CustomerNavbar';
+import CustomerFooter from './components/CustomerFooter/CustomerFooter';
 
 import Landing from './components/Landing/Landing';
 import Dashboard from './components/Dashboard/Dashboard';
@@ -39,6 +41,7 @@ const CustomerLayout = () => {
     <>
       <CustomerNavbar />
       <Outlet />
+      <CustomerFooter />
     </>
   );
 };
@@ -139,6 +142,16 @@ const App = () => {
           />
 
           <Route
+            path="about"
+            element={<StorePage />}
+          />
+
+          <Route
+            path="contact"
+            element={<StorePage />}
+          />
+
+          <Route
             path="cart"
             element={<Cart />}
           />
@@ -169,3 +182,4 @@ const App = () => {
 };
 
 export default App;
+

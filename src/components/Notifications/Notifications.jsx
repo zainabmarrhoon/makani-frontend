@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router';
 import {
@@ -39,6 +40,18 @@ const Notifications = () => {
             : notification
         )
       );
+    } catch (err) {
+      setMessage(err.message);
+    }
+  };
+
+  const handleViewOrder = async (notification) => {
+    try {
+      if (!notification.is_read) {
+        await handleMarkAsRead(notification.id);
+      }
+
+      navigate(`/stores/${storeId}/orders`);
     } catch (err) {
       setMessage(err.message);
     }
@@ -106,9 +119,7 @@ const Notifications = () => {
                 <button
                   type="button"
                   onClick={() =>
-                    navigate(
-                      `/orders/${notification.order_id}/track`
-                    )
+                    handleViewOrder(notification)
                   }
                 >
                   View Order
@@ -123,3 +134,4 @@ const Notifications = () => {
 };
 
 export default Notifications;
+

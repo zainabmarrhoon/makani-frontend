@@ -144,6 +144,32 @@ const uploadHeroImage = async (storeId, image) => {
   }
 };
 
+const getPreviewStore = async (storeId) => {
+  try {
+    const res = await fetch(
+      `${BASE_URL}/stores/${storeId}/preview`,
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`
+        }
+      }
+    );
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      throw new Error(
+        data.detail || 'Failed to get preview store'
+      );
+    }
+
+    return data;
+  } catch (err) {
+    console.log(err);
+    throw err;
+  }
+};
+
 const getPublicStore = async (slug) => {
   try {
     const res = await fetch(
@@ -171,5 +197,6 @@ export {
   createStore,
   updateStore,
   uploadHeroImage,
+  getPreviewStore,
   getPublicStore
 };
