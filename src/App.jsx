@@ -1,4 +1,3 @@
-
 import { useContext } from 'react';
 import { Route, Routes, useLocation, Outlet } from 'react-router';
 
@@ -93,6 +92,16 @@ const App = () => {
         />
 
         <Route
+          path="/stores/orders"
+          element={<StoreOrders />}
+        />
+
+        <Route
+          path="/stores/notifications"
+          element={<Notifications />}
+        />
+
+        <Route
           path="/stores/:storeId/orders"
           element={<StoreOrders />}
         />
@@ -182,4 +191,3 @@ const App = () => {
 };
 
 export default App;
-

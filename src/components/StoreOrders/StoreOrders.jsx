@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router';
 import {
@@ -6,6 +5,7 @@ import {
   updateOrderStatus,
   updatePaymentStatus
 } from '../../services/orderService';
+import { getStores } from '../../services/storeService';
 
 const BASE_URL = import.meta.env.VITE_BACK_END_SERVER_URL;
 
@@ -19,8 +19,27 @@ const StoreOrders = () => {
   useEffect(() => {
     const loadOrders = async () => {
       try {
-        const data = await getStoreOrders(storeId);
-        setOrders(data);
+        if (storeId) {
+          const data = await getStoreOrders(storeId);
+          setOrders(data);
+          return;
+        }
+
+        const storesResponse = await getStores();
+
+        const stores = Array.isArray(storesResponse)
+          ? storesResponse
+          : storesResponse.stores || [];
+
+        const orderResponses = await Promise.all(
+          stores.map((store) =>
+            getStoreOrders(store.id)
+          )
+        );
+
+        const allOrders = orderResponses.flat();
+
+        setOrders(allOrders);
       } catch (err) {
         setMessage(err.message);
       }
@@ -82,17 +101,21 @@ const StoreOrders = () => {
       <button
         type="button"
         onClick={() =>
-          navigate(`/stores/${storeId}`)
+          navigate(
+            storeId
+              ? `/stores/${storeId}`
+              : '/stores'
+          )
         }
       >
-        Back to Store
+        {storeId ? 'Back to Store' : 'Back to My Stores'}
       </button>
 
       <div className="store-orders-header">
-        <h1>Store Orders</h1>
+        <h1>Orders</h1>
 
         <p>
-          View and manage orders for this store
+          View and manage customer orders
         </p>
       </div>
 
@@ -103,7 +126,7 @@ const StoreOrders = () => {
           <h2>No orders yet</h2>
 
           <p>
-            Orders for this store will appear here
+            Customer orders will appear here
           </p>
         </div>
       ) : (
@@ -268,4 +291,3 @@ const StoreOrders = () => {
 };
 
 export default StoreOrders;
-

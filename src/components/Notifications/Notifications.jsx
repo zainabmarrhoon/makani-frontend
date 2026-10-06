@@ -1,10 +1,10 @@
-
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router';
 import {
   getStoreNotifications,
   markNotificationAsRead
 } from '../../services/notificationService';
+import { getStores } from '../../services/storeService';
 
 const Notifications = () => {
   const navigate = useNavigate();
@@ -16,8 +16,31 @@ const Notifications = () => {
   useEffect(() => {
     const loadNotifications = async () => {
       try {
-        const data = await getStoreNotifications(storeId);
-        setNotifications(data);
+        if (storeId) {
+          const data =
+            await getStoreNotifications(storeId);
+
+          setNotifications(data);
+          return;
+        }
+
+        const storesResponse = await getStores();
+
+        const stores = Array.isArray(storesResponse)
+          ? storesResponse
+          : storesResponse.stores || [];
+
+        const notificationResponses =
+          await Promise.all(
+            stores.map((store) =>
+              getStoreNotifications(store.id)
+            )
+          );
+
+        const allNotifications =
+          notificationResponses.flat();
+
+        setNotifications(allNotifications);
       } catch (err) {
         setMessage(err.message);
       }
@@ -26,12 +49,16 @@ const Notifications = () => {
     loadNotifications();
   }, [storeId]);
 
-  const handleMarkAsRead = async (notificationId) => {
+  const handleMarkAsRead = async (
+    notificationId
+  ) => {
     try {
       setMessage('');
 
       const updatedNotification =
-        await markNotificationAsRead(notificationId);
+        await markNotificationAsRead(
+          notificationId
+        );
 
       setNotifications((currentNotifications) =>
         currentNotifications.map((notification) =>
@@ -45,13 +72,23 @@ const Notifications = () => {
     }
   };
 
-  const handleViewOrder = async (notification) => {
+  const handleViewOrder = async (
+    notification
+  ) => {
     try {
       if (!notification.is_read) {
-        await handleMarkAsRead(notification.id);
+        await handleMarkAsRead(
+          notification.id
+        );
       }
 
-      navigate(`/stores/${storeId}/orders`);
+      if (storeId) {
+        navigate(
+          `/stores/${storeId}/orders`
+        );
+      } else {
+        navigate('/stores/orders');
+      }
     } catch (err) {
       setMessage(err.message);
     }
@@ -59,16 +96,26 @@ const Notifications = () => {
 
   return (
     <div className="notifications-page">
+
       <button
         type="button"
-        onClick={() => navigate(`/stores/${storeId}`)}
+        onClick={() =>
+          navigate(
+            storeId
+              ? `/stores/${storeId}`
+              : '/stores'
+          )
+        }
       >
-        Back to Store
+        {storeId ? 'Back to Store' : 'Back to My Stores'}
       </button>
 
       <div className="notifications-header">
         <h1>Notifications</h1>
-        <p>Stay updated with your store orders</p>
+
+        <p>
+          Stay updated with your store orders
+        </p>
       </div>
 
       {message && <p>{message}</p>}
@@ -76,20 +123,27 @@ const Notifications = () => {
       {notifications.length === 0 ? (
         <div className="notifications-empty">
           <h2>No notifications</h2>
+
           <p>
             New order notifications will appear here
           </p>
         </div>
       ) : (
         <div className="notifications-list">
+
           {notifications.map((notification) => (
             <div
               className="notification-card"
               key={notification.id}
             >
-              <h2>{notification.type}</h2>
 
-              <p>{notification.message}</p>
+              <h2>
+                {notification.type}
+              </h2>
+
+              <p>
+                {notification.message}
+              </p>
 
               <p>
                 {new Date(
@@ -108,7 +162,9 @@ const Notifications = () => {
                 <button
                   type="button"
                   onClick={() =>
-                    handleMarkAsRead(notification.id)
+                    handleMarkAsRead(
+                      notification.id
+                    )
                   }
                 >
                   Mark as Read
@@ -119,19 +175,23 @@ const Notifications = () => {
                 <button
                   type="button"
                   onClick={() =>
-                    handleViewOrder(notification)
+                    handleViewOrder(
+                      notification
+                    )
                   }
                 >
                   View Order
                 </button>
               )}
+
             </div>
           ))}
+
         </div>
       )}
+
     </div>
   );
 };
 
 export default Notifications;
-

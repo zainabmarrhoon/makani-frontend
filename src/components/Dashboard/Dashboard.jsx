@@ -138,7 +138,10 @@ const Dashboard = () => {
       </section>
 
       <section className="dashboard-stats">
-        <article className="dashboard-stat-card">
+        <Link
+          to="/stores"
+          className="dashboard-stat-card"
+        >
           <span className="dashboard-stat-number">
             {isLoading ? '...' : stores.length}
           </span>
@@ -146,9 +149,12 @@ const Dashboard = () => {
           <span className="dashboard-stat-label">
             My Stores
           </span>
-        </article>
+        </Link>
 
-        <article className="dashboard-stat-card">
+        <Link
+          to="/products"
+          className="dashboard-stat-card"
+        >
           <span className="dashboard-stat-number">
             {isProductsLoading ? '...' : productsCount}
           </span>
@@ -156,9 +162,12 @@ const Dashboard = () => {
           <span className="dashboard-stat-label">
             Products
           </span>
-        </article>
+        </Link>
 
-        <article className="dashboard-stat-card">
+        <Link
+          to="/stores/orders"
+          className="dashboard-stat-card"
+        >
           <span className="dashboard-stat-number">
             {isOrdersLoading ? '...' : ordersCount}
           </span>
@@ -166,9 +175,12 @@ const Dashboard = () => {
           <span className="dashboard-stat-label">
             Orders
           </span>
-        </article>
+        </Link>
 
-        <article className="dashboard-stat-card">
+        <Link
+          to="/stores/notifications"
+          className="dashboard-stat-card"
+        >
           <span className="dashboard-stat-number">
             {isNotificationsLoading
               ? '...'
@@ -178,7 +190,7 @@ const Dashboard = () => {
           <span className="dashboard-stat-label">
             Notifications
           </span>
-        </article>
+        </Link>
       </section>
 
       <section className="dashboard-section">

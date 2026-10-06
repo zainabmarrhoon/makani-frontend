@@ -20,6 +20,7 @@ const StoreDetails = () => {
   const [saving, setSaving] = useState(false);
   const [heroImage, setHeroImage] = useState(null);
   const [logo, setLogo] = useState(null);
+  const [publicUrl, setPublicUrl] = useState('');
 
   const [settings, setSettings] = useState({
     show_home: true,
@@ -27,6 +28,7 @@ const StoreDetails = () => {
     show_about: true,
     show_contact: true,
     show_cart: true,
+    show_orders: true,
     hero_title: '',
     hero_description: '',
     hero_button_text: '',
@@ -43,12 +45,19 @@ const StoreDetails = () => {
         setStore(storeData);
         setProducts(productsData);
 
+        if (storeData.status === 'published') {
+          setPublicUrl(
+            `${window.location.origin}/store/${storeData.slug}`
+          );
+        }
+
         setSettings({
           show_home: storeData.show_home,
           show_products: storeData.show_products,
           show_about: storeData.show_about,
           show_contact: storeData.show_contact,
           show_cart: storeData.show_cart,
+          show_orders: storeData.show_orders,
           hero_title:
             storeData.hero_title ||
             `Welcome to ${storeData.name}`,
@@ -143,6 +152,11 @@ const StoreDetails = () => {
 
       setStore(updatedStore);
 
+      const url =
+        `${window.location.origin}/store/${updatedStore.slug}`;
+
+      setPublicUrl(url);
+
       setMessage('Store published successfully.');
     } catch (err) {
       setMessage(err.message);
@@ -151,18 +165,28 @@ const StoreDetails = () => {
     }
   };
 
-const handlePreview = async () => {
-  try {
-    const previewStore = await getPreviewStore(storeId);
+  const handleCopyUrl = async () => {
+    try {
+      await navigator.clipboard.writeText(publicUrl);
+      setMessage('Store URL copied successfully.');
+    } catch (err) {
+      setMessage('Failed to copy store URL.');
+    }
+  };
 
-    window.open(
-      `/store/${previewStore.slug}?preview=true&storeId=${storeId}`,
-      '_blank'
-    );
-  } catch (err) {
-    setMessage(err.message);
-  }
-};
+  const handlePreview = async () => {
+    try {
+      const previewStore = await getPreviewStore(storeId);
+
+      window.open(
+        `/store/${previewStore.slug}?preview=true&storeId=${storeId}`,
+        '_blank'
+      );
+    } catch (err) {
+      setMessage(err.message);
+    }
+  };
+
   if (message && !store) {
     return (
       <div className="store-builder">
@@ -215,6 +239,25 @@ const handlePreview = async () => {
         <p className="store-builder-message">
           {message}
         </p>
+      )}
+
+      {publicUrl && (
+        <div className="store-public-url">
+          <p>Your store is published!</p>
+
+          <input
+            type="text"
+            value={publicUrl}
+            readOnly
+          />
+
+          <button
+            type="button"
+            onClick={handleCopyUrl}
+          >
+            Copy URL
+          </button>
+        </div>
       )}
 
       <main className="store-builder-form-container">
@@ -281,6 +324,16 @@ const handlePreview = async () => {
                 onChange={handleSettingChange}
               />
               Cart
+            </label>
+
+            <label>
+              <input
+                type="checkbox"
+                name="show_orders"
+                checked={settings.show_orders}
+                onChange={handleSettingChange}
+              />
+              My Orders
             </label>
 
           </section>

@@ -59,6 +59,7 @@ const CustomerNavbar = () => {
       </div>
 
       <nav className="customer-navbar-links">
+
         {store.show_home && (
           <button
             type="button"
@@ -121,6 +122,31 @@ const CustomerNavbar = () => {
             Cart
           </button>
         )}
+
+        {store.show_orders && (
+          <button
+            type="button"
+            onClick={() =>
+              navigate(
+                `${storeUrl}/orders${previewQuery}`
+              )
+            }
+          >
+            My Orders
+          </button>
+        )}
+
+        {isPreview && (
+          <button
+            type="button"
+            onClick={() =>
+              navigate(`/stores/${previewStoreId}`)
+            }
+          >
+            Back to Builder
+          </button>
+        )}
+
       </nav>
     </header>
   );
