@@ -1,8 +1,8 @@
-
-import { useContext, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router';
 import { CartContext } from '../../contexts/CartContext';
 import { createOrder } from '../../services/orderService';
+import { getPublicStore } from '../../services/storeService';
 
 const Checkout = () => {
   const navigate = useNavigate();
@@ -13,6 +13,8 @@ const Checkout = () => {
     total,
     clearCart
   } = useContext(CartContext);
+
+  const [store, setStore] = useState(null);
 
   const [formData, setFormData] = useState({
     customerName: '',
@@ -25,7 +27,18 @@ const Checkout = () => {
   const [message, setMessage] = useState('');
   const [copied, setCopied] = useState(false);
 
-  const iban = 'YOUR_IBAN_HERE';
+  useEffect(() => {
+    const loadStore = async () => {
+      try {
+        const storeData = await getPublicStore(slug);
+        setStore(storeData);
+      } catch (err) {
+        setMessage(err.message);
+      }
+    };
+
+    loadStore();
+  }, [slug]);
 
   const handleChange = (event) => {
     const { name, value } = event.target;
@@ -44,7 +57,10 @@ const Checkout = () => {
 
   const handleCopyIban = async () => {
     try {
-      await navigator.clipboard.writeText(iban);
+      await navigator.clipboard.writeText(
+        store.benefitpay_iban
+      );
+
       setCopied(true);
 
       setTimeout(() => {
@@ -69,6 +85,15 @@ const Checkout = () => {
 
       if (!storeId) {
         throw new Error('Store information is missing');
+      }
+
+      if (
+        formData.paymentMethod === 'benefitpay' &&
+        !store.benefitpay_iban
+      ) {
+        throw new Error(
+          'BenefitPay IBAN is not available for this store'
+        );
       }
 
       if (
@@ -132,6 +157,14 @@ const Checkout = () => {
       setMessage(err.message);
     }
   };
+
+  if (!store) {
+    return (
+      <div className="checkout-page">
+        <p>Loading checkout...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="checkout-page">
@@ -249,14 +282,19 @@ const Checkout = () => {
             </p>
 
             <div>
-              <span>{iban}</span>
+              <span>
+                {store.benefitpay_iban ||
+                  'IBAN not available'}
+              </span>
 
-              <button
-                type="button"
-                onClick={handleCopyIban}
-              >
-                {copied ? 'Copied' : 'Copy'}
-              </button>
+              {store.benefitpay_iban && (
+                <button
+                  type="button"
+                  onClick={handleCopyIban}
+                >
+                  {copied ? 'Copied' : 'Copy'}
+                </button>
+              )}
             </div>
 
             <p>

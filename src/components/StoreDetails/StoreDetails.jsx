@@ -33,7 +33,8 @@ const StoreDetails = () => {
     hero_description: '',
     hero_button_text: '',
     about_title: '',
-    about_description: ''
+    about_description: '',
+    benefitpay_iban: ''
   });
 
   useEffect(() => {
@@ -74,6 +75,9 @@ const StoreDetails = () => {
           about_description:
             storeData.about_description ||
             storeData.description ||
+            '',
+          benefitpay_iban:
+            storeData.benefitpay_iban ||
             ''
         });
       } catch (err) {
@@ -449,6 +453,24 @@ const StoreDetails = () => {
                 name="about_description"
                 value={settings.about_description}
                 onChange={handleSettingChange}
+              />
+            </label>
+
+          </section>
+
+          <section className="builder-form-section">
+
+            <h2>BenefitPay Settings</h2>
+
+            <label>
+              BenefitPay IBAN
+
+              <input
+                type="text"
+                name="benefitpay_iban"
+                value={settings.benefitpay_iban}
+                onChange={handleSettingChange}
+                placeholder="Enter BenefitPay IBAN"
               />
             </label>
 
