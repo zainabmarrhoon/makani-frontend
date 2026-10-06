@@ -1,10 +1,11 @@
 import { useContext, useState } from 'react';
-import { useNavigate } from 'react-router';
+import { useNavigate, useParams } from 'react-router';
 import { CartContext } from '../../contexts/CartContext';
 import { createOrder } from '../../services/orderService';
 
 const Checkout = () => {
   const navigate = useNavigate();
+  const { slug } = useParams();
 
   const {
     cartItems,
@@ -101,11 +102,14 @@ const Checkout = () => {
 
       clearCart();
 
-      navigate('/order-success', {
-        state: {
-          orderId: order.id
+      navigate(
+        `/store/${slug}/order-success`,
+        {
+          state: {
+            orderId: order.id
+          }
         }
-      });
+      );
     } catch (err) {
       setMessage(err.message);
     }
@@ -113,9 +117,12 @@ const Checkout = () => {
 
   return (
     <div className="checkout-page">
+
       <button
         type="button"
-        onClick={() => navigate('/cart')}
+        onClick={() =>
+          navigate(`/store/${slug}/cart`)
+        }
       >
         Back to Cart
       </button>
@@ -151,6 +158,7 @@ const Checkout = () => {
       </div>
 
       <form onSubmit={handleSubmit}>
+
         <div>
           <label>Full Name</label>
 
@@ -214,6 +222,7 @@ const Checkout = () => {
 
         {formData.paymentMethod === 'benefitpay' && (
           <div className="benefitpay-payment">
+
             <h2>BenefitPay Payment</h2>
 
             <p>
@@ -244,12 +253,14 @@ const Checkout = () => {
               accept="image/*"
               required
             />
+
           </div>
         )}
 
         <button type="submit">
           Place Order
         </button>
+
       </form>
     </div>
   );

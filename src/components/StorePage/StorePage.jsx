@@ -1,14 +1,12 @@
 import { useEffect, useState } from 'react';
-import { useContext } from 'react';
 import { useNavigate, useParams } from 'react-router';
-import { CartContext } from '../../contexts/CartContext';
 import { getPublicStore } from '../../services/storeService';
+
+const BASE_URL = import.meta.env.VITE_BACK_END_SERVER_URL;
 
 const StorePage = () => {
   const navigate = useNavigate();
   const { slug } = useParams();
-
-  const { addToCart } = useContext(CartContext);
 
   const [store, setStore] = useState(null);
   const [message, setMessage] = useState('');
@@ -42,91 +40,71 @@ const StorePage = () => {
     );
   }
 
-  const products = store.products || [];
-
-  const handleAddToCart = (product) => {
-    addToCart({
-      ...product,
-      store_id: product.store_id || store.id
-    });
-
-    navigate('/cart');
+  const handleShopNow = () => {
+    navigate(`/store/${store.slug}/products`);
   };
 
   return (
     <div className="store-page">
-      <div className="store-header">
-        <h1>{store.name}</h1>
 
-        <p>{store.description}</p>
+      {store.hero_image && (
+        <section className="store-hero">
+          <img
+            className="store-hero-image"
+            src={`${BASE_URL}/${store.hero_image}`}
+            alt={`${store.name} hero`}
+          />
+        </section>
+      )}
 
-        {store.phone && (
-          <p>Phone: {store.phone}</p>
-        )}
+      {store.show_home && (
+        <section
+          id="home"
+          className="store-home"
+        >
+          <button
+            type="button"
+            onClick={handleShopNow}
+          >
+            {store.hero_button_text || 'Shop Now'}
+          </button>
+        </section>
+      )}
 
-        {store.email && (
-          <p>Email: {store.email}</p>
-        )}
+      {store.show_about && (
+        <section
+          id="about"
+          className="store-about"
+        >
+          <h2>{store.about_title}</h2>
 
-        {store.address && (
-          <p>Address: {store.address}</p>
-        )}
-      </div>
+          <p>
+            {store.about_description}
+          </p>
+        </section>
+      )}
 
-      <div className="store-products">
-        <h2>Products</h2>
+      {store.show_contact && (
+        <section
+          id="contact"
+          className="store-contact"
+        >
+          <h2>Contact</h2>
 
-        {products.length === 0 ? (
-          <div>
-            <h3>No products yet</h3>
-            <p>
-              This store has not added any products.
-            </p>
-          </div>
-        ) : (
-          <div>
-            {products.map((product) => (
-              <div
-                className="product-card"
-                key={product.id}
-              >
-                {product.image && (
-                  <img
-                    src={product.image}
-                    alt={product.name}
-                  />
-                )}
+          {store.phone && (
+            <p>Phone: {store.phone}</p>
+          )}
 
-                <h3>{product.name}</h3>
+          {store.email && (
+            <p>Email: {store.email}</p>
+          )}
 
-                <p>{product.description}</p>
+          {store.address && (
+            <p>Address: {store.address}</p>
+          )}
+        </section>
+      )}
 
-                <p>
-                  {Number(product.price).toFixed(2)} BHD
-                </p>
-
-                <button
-                  type="button"
-                  onClick={() =>
-                    navigate(`/products/${product.id}`)
-                  }
-                >
-                  View Product
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() =>
-                    handleAddToCart(product)
-                  }
-                >
-                  Add to Cart
-                </button>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
     </div>
   );
 };

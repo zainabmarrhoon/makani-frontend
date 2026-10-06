@@ -1,10 +1,11 @@
 import { useContext } from 'react';
-import { useNavigate } from 'react-router';
+import { useNavigate, useParams } from 'react-router';
 
 import { CartContext } from '../../contexts/CartContext';
 
 const Cart = () => {
   const navigate = useNavigate();
+  const { slug } = useParams();
 
   const {
     cartItems,
@@ -70,7 +71,9 @@ const Cart = () => {
 
             <button
               type="button"
-              onClick={() => navigate('/checkout')}
+              onClick={() =>
+                navigate(`/store/${slug}/checkout`)
+              }
             >
               Proceed to Checkout
             </button>

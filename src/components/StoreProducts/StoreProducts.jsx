@@ -1,102 +1,79 @@
-
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useContext } from 'react';
 import { useNavigate, useParams } from 'react-router';
-import {
-  getStoreProducts,
-  deleteProduct
-} from '../../services/productService';
+import { CartContext } from '../../contexts/CartContext';
+import { getPublicStore } from '../../services/storeService';
 
 const BASE_URL = import.meta.env.VITE_BACK_END_SERVER_URL;
 
 const StoreProducts = () => {
   const navigate = useNavigate();
-  const { storeId } = useParams();
+  const { slug } = useParams();
 
-  const [products, setProducts] = useState([]);
+  const { addToCart } = useContext(CartContext);
+
+  const [store, setStore] = useState(null);
   const [message, setMessage] = useState('');
 
   useEffect(() => {
-    const loadProducts = async () => {
+    const loadStore = async () => {
       try {
-        const data = await getStoreProducts(storeId);
-        setProducts(data);
+        const data = await getPublicStore(slug);
+        setStore(data);
       } catch (err) {
         setMessage(err.message);
       }
     };
 
-    loadProducts();
-  }, [storeId]);
+    loadStore();
+  }, [slug]);
 
-  const handleDelete = async (productId) => {
-    const confirmed = window.confirm(
-      'Are you sure you want to delete this product?'
+  if (message) {
+    return (
+      <div className="store-products-page">
+        <p>{message}</p>
+      </div>
     );
+  }
 
-    if (!confirmed) {
-      return;
-    }
+  if (!store) {
+    return (
+      <div className="store-products-page">
+        <p>Loading products...</p>
+      </div>
+    );
+  }
 
-    try {
-      setMessage('');
+  const products = store.products || [];
 
-      await deleteProduct(productId);
+  const handleAddToCart = (product) => {
+    addToCart({
+      ...product,
+      store_id: product.store_id || store.id
+    });
 
-      setProducts((currentProducts) =>
-        currentProducts.filter(
-          (product) => product.id !== productId
-        )
-      );
-    } catch (err) {
-      setMessage(err.message);
-    }
+    navigate(`/store/${store.slug}/cart`);
   };
 
-  const handleCreateProduct = () => {
-    navigate(`/products/create?storeId=${storeId}`);
+  const handleViewProduct = (productId) => {
+    navigate(
+      `/store/${store.slug}/products/${productId}`
+    );
   };
 
   return (
     <div className="store-products-page">
-      <button
-        type="button"
-        onClick={() => navigate(`/stores/${storeId}`)}
-      >
-        Back to Store
-      </button>
 
-      <div className="store-products-header">
-        <h1>Store Products</h1>
-
-        <p>
-          Manage the products in your store
-        </p>
-
-        <button
-          type="button"
-          onClick={handleCreateProduct}
-        >
-          Create Product
-        </button>
-      </div>
-
-      {message && <p>{message}</p>}
+      <section className="store-products-header">
+        <h1>Products</h1>
+      </section>
 
       {products.length === 0 ? (
         <div className="products-empty">
           <h2>No products yet</h2>
 
           <p>
-            Create your first product to start
-            selling
+            This store has not added any products.
           </p>
-
-          <button
-            type="button"
-            onClick={handleCreateProduct}
-          >
-            Create Your First Product
-          </button>
         </div>
       ) : (
         <div className="store-products-list">
@@ -123,7 +100,7 @@ const StoreProducts = () => {
               <button
                 type="button"
                 onClick={() =>
-                  navigate(`/products/${product.id}`)
+                  handleViewProduct(product.id)
                 }
               >
                 View Product
@@ -132,29 +109,18 @@ const StoreProducts = () => {
               <button
                 type="button"
                 onClick={() =>
-                  navigate(
-                    `/products/${product.id}/edit`
-                  )
+                  handleAddToCart(product)
                 }
               >
-                Edit Product
-              </button>
-
-              <button
-                type="button"
-                onClick={() =>
-                  handleDelete(product.id)
-                }
-              >
-                Delete Product
+                Add to Cart
               </button>
             </div>
           ))}
         </div>
       )}
+
     </div>
   );
 };
 
 export default StoreProducts;
-

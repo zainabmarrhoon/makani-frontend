@@ -1,4 +1,3 @@
-
 const BASE_URL = import.meta.env.VITE_BACK_END_SERVER_URL;
 
 const getStores = async () => {
@@ -84,6 +83,67 @@ const createStore = async (formData) => {
   }
 };
 
+const updateStore = async (storeId, storeData) => {
+  try {
+    const res = await fetch(
+      `${BASE_URL}/stores/${storeId}`,
+      {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('token')}`
+        },
+        body: JSON.stringify(storeData)
+      }
+    );
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      throw new Error(
+        data.detail || 'Failed to update store'
+      );
+    }
+
+    return data;
+  } catch (err) {
+    console.log(err);
+    throw err;
+  }
+};
+
+const uploadHeroImage = async (storeId, image) => {
+  try {
+    const dataToSend = new FormData();
+
+    dataToSend.append('hero_image', image);
+
+    const res = await fetch(
+      `${BASE_URL}/stores/${storeId}/hero-image`,
+      {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`
+        },
+        body: dataToSend
+      }
+    );
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      throw new Error(
+        data.detail || 'Failed to upload hero image'
+      );
+    }
+
+    return data;
+  } catch (err) {
+    console.log(err);
+    throw err;
+  }
+};
+
 const getPublicStore = async (slug) => {
   try {
     const res = await fetch(
@@ -109,6 +169,7 @@ export {
   getStores,
   getStore,
   createStore,
+  updateStore,
+  uploadHeroImage,
   getPublicStore
 };
-
