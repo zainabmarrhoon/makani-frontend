@@ -1,9 +1,33 @@
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
+import { getStores } from '../../services/storeService';
 
 const Products = () => {
   const navigate = useNavigate();
 
-  const products = [];
+  const [stores, setStores] = useState([]);
+  const [message, setMessage] = useState('');
+
+  useEffect(() => {
+    const loadStores = async () => {
+      try {
+        const data = await getStores();
+        setStores(data);
+      } catch (err) {
+        setMessage(err.message);
+      }
+    };
+
+    loadStores();
+  }, []);
+
+  const handleAddProduct = (storeId) => {
+    navigate(`/products/create?storeId=${storeId}`);
+  };
+
+  const handleManageProducts = (storeId) => {
+    navigate(`/stores/${storeId}/products`);
+  };
 
   return (
     <div className="products-page">
@@ -12,56 +36,55 @@ const Products = () => {
           <h1>Products</h1>
           <p>Manage your store products</p>
         </div>
-
-        {products.length > 0 && (
-          <button
-            className="add-product-btn"
-            type="button"
-            onClick={() => navigate('/products/create')}
-          >
-            Add New Product
-          </button>
-        )}
       </div>
 
-      {products.length === 0 ? (
+      {message && <p>{message}</p>}
+
+      {stores.length === 0 ? (
         <div className="products-empty">
-          <h2>No products yet</h2>
+          <h2>No stores yet</h2>
 
           <p>
-            Add your first product to start selling
+            Create a store before adding products.
           </p>
 
           <button
             className="add-product-btn"
             type="button"
-            onClick={() => navigate('/products/create')}
+            onClick={() => navigate('/stores/create')}
           >
-            Add Your First Product
+            Create Your First Store
           </button>
         </div>
       ) : (
         <div className="products-list">
-          {products.map((product) => (
+          {stores.map((store) => (
             <div
               className="product-card"
-              key={product.id}
+              key={store.id}
             >
-              <h2>{product.name}</h2>
-
-              <p>{product.description}</p>
+              <h2>{store.name}</h2>
 
               <p>
-                {Number(product.price).toFixed(2)} BHD
+                Manage the products for this store.
               </p>
 
               <button
                 type="button"
                 onClick={() =>
-                  navigate(`/products/${product.id}`)
+                  handleAddProduct(store.id)
                 }
               >
-                Manage Product
+                Add Product
+              </button>
+
+              <button
+                type="button"
+                onClick={() =>
+                  handleManageProducts(store.id)
+                }
+              >
+                Manage Products
               </button>
             </div>
           ))}

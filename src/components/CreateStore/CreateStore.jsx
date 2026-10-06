@@ -6,24 +6,23 @@ import { createStore } from '../../services/storeService';
 const CreateStore = () => {
   const navigate = useNavigate();
 
-  const [formData, setFormData] = useState({
-    name: '',
-    description: '',
-    phone: '',
-    email: '',
-    address: '',
-    logo: '',
-    slug: ''
-  });
-
+const [formData, setFormData] = useState({
+  name: '',
+  description: '',
+  phone: '',
+  email: '',
+  address: '',
+  logo: null,
+  slug: ''
+});
   const handleChange = (event) => {
-    const { name, value } = event.target;
+  const { name, value, files } = event.target;
 
-    setFormData({
-      ...formData,
-      [name]: value
-    });
-  };
+  setFormData({
+    ...formData,
+    [name]: files ? files[0] : value
+  });
+};
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -112,12 +111,11 @@ const CreateStore = () => {
         <div>
           <label>Store Logo</label>
           <input
-            type="text"
-            name="logo"
-            value={formData.logo}
-            onChange={handleChange}
-            placeholder="Enter your logo URL"
-          />
+  type="file"
+  name="logo"
+  onChange={handleChange}
+  accept="image/jpeg,image/png,image/webp"
+/>
         </div>
 
         <div>

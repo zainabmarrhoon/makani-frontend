@@ -1,3 +1,4 @@
+
 import { useNavigate, useSearchParams } from 'react-router';
 import { useState } from 'react';
 import { createProduct } from '../../services/productService';
@@ -12,17 +13,17 @@ const CreateProduct = () => {
     name: '',
     description: '',
     price: '',
-    image: ''
+    image: null
   });
 
   const [message, setMessage] = useState('');
 
   const handleChange = (event) => {
-    const { name, value } = event.target;
+    const { name, value, files } = event.target;
 
     setFormData({
       ...formData,
-      [name]: value
+      [name]: files ? files[0] : value
     });
   };
 
@@ -32,14 +33,9 @@ const CreateProduct = () => {
     try {
       setMessage('');
 
-      await createProduct(storeId, {
-        name: formData.name,
-        description: formData.description,
-        price: formData.price,
-        image: formData.image
-      });
+      await createProduct(storeId, formData);
 
-      navigate(`/stores/${storeId}/products`);
+      navigate(`/stores/${storeId}`);
     } catch (err) {
       setMessage(err.message);
     }
@@ -48,17 +44,17 @@ const CreateProduct = () => {
   return (
     <div className="create-product-page">
       <button
-         type="button"
-         className="back-page-button"
-         onClick={() => navigate('/products')}
-         >
-           Back to Products
+        type="button"
+        className="back-page-button"
+        onClick={() => navigate(`/stores/${storeId}`)}
+      >
+        Back to Store
       </button>
 
-      <h1>Create Product</h1>
+      <h1>Add Product</h1>
 
       <p>
-        Add a new product to your store
+        Add a product to your store
       </p>
 
       {message && <p>{message}</p>}
@@ -105,19 +101,18 @@ const CreateProduct = () => {
         </div>
 
         <div>
-          <label>Image URL</label>
+          <label>Product Image</label>
 
           <input
-            type="text"
+            type="file"
             name="image"
-            value={formData.image}
             onChange={handleChange}
-            placeholder="Enter image URL"
+            accept="image/jpeg,image/png,image/webp"
           />
         </div>
 
         <button type="submit">
-          Create Product
+          Add Product
         </button>
       </form>
     </div>

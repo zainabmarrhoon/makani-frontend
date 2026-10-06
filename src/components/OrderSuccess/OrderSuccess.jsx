@@ -1,8 +1,10 @@
-import { useLocation, useNavigate } from 'react-router';
+
+import { useLocation, useNavigate, useParams } from 'react-router';
 
 const OrderSuccess = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { slug } = useParams();
 
   const orderId = location.state?.orderId;
 
@@ -30,7 +32,9 @@ const OrderSuccess = () => {
         <button
           type="button"
           onClick={() =>
-            navigate(`/orders/${orderId}/track`)
+            navigate(
+              `/store/${slug}/orders/${orderId}/track`
+            )
           }
         >
           Track Order
@@ -39,7 +43,9 @@ const OrderSuccess = () => {
 
       <button
         type="button"
-        onClick={() => navigate('/')}
+        onClick={() =>
+          navigate(`/store/${slug}`)
+        }
       >
         Back to Home
       </button>
@@ -48,3 +54,4 @@ const OrderSuccess = () => {
 };
 
 export default OrderSuccess;
+

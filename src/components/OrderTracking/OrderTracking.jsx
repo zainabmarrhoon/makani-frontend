@@ -1,10 +1,11 @@
+
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router';
 import { getOrder } from '../../services/orderService';
 
 const OrderTracking = () => {
   const navigate = useNavigate();
-  const { orderId } = useParams();
+  const { slug, orderId } = useParams();
 
   const [order, setOrder] = useState(null);
   const [message, setMessage] = useState('');
@@ -27,7 +28,9 @@ const OrderTracking = () => {
       <div className="order-tracking-page">
         <button
           type="button"
-          onClick={() => navigate('/orders')}
+          onClick={() =>
+            navigate(`/store/${slug}/orders`)
+          }
         >
           Back to Orders
         </button>
@@ -60,13 +63,17 @@ const OrderTracking = () => {
     <div className="order-tracking-page">
       <button
         type="button"
-        onClick={() => navigate('/orders')}
+        onClick={() =>
+          navigate(`/store/${slug}/orders`)
+        }
       >
         Back to Orders
       </button>
 
       <div className="order-tracking-header">
-        <h1>Order #{order.id}</h1>
+        <h1>
+          Order #{order.id}
+        </h1>
 
         <p>
           Total:{' '}
@@ -123,3 +130,4 @@ const OrderTracking = () => {
 };
 
 export default OrderTracking;
+

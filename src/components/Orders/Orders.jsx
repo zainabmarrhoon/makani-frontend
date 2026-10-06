@@ -1,8 +1,10 @@
+
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router';
+import { useNavigate, useParams } from 'react-router';
 
 const Orders = () => {
   const navigate = useNavigate();
+  const { slug } = useParams();
 
   const [orders, setOrders] = useState([]);
 
@@ -17,7 +19,10 @@ const Orders = () => {
     <div className="orders-page">
       <div className="orders-header">
         <h1>My Orders</h1>
-        <p>View and track your orders</p>
+
+        <p>
+          View and track your orders
+        </p>
       </div>
 
       {orders.length === 0 ? (
@@ -31,9 +36,11 @@ const Orders = () => {
 
           <button
             type="button"
-            onClick={() => navigate('/stores')}
+            onClick={() =>
+              navigate(`/store/${slug}`)
+            }
           >
-            Browse Stores
+            Back to Store
           </button>
         </div>
       ) : (
@@ -43,7 +50,9 @@ const Orders = () => {
               className="order-card"
               key={order.id}
             >
-              <h2>Order #{order.id}</h2>
+              <h2>
+                Order #{order.id}
+              </h2>
 
               <p>
                 Total:{' '}
@@ -58,7 +67,7 @@ const Orders = () => {
                 type="button"
                 onClick={() =>
                   navigate(
-                    `/orders/${order.id}/track`
+                    `/store/${slug}/orders/${order.id}/track`
                   )
                 }
               >
@@ -73,3 +82,4 @@ const Orders = () => {
 };
 
 export default Orders;
+

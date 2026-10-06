@@ -1,7 +1,10 @@
 import { useContext } from 'react';
-import { Route, Routes } from 'react-router';
+import { Route, Routes, useLocation, Outlet } from 'react-router';
 
 import NavBar from './components/NavBar/NavBar';
+import CustomerNavbar from './components/CustomerNavbar/CustomerNavbar';
+import CustomerFooter from './components/CustomerFooter/CustomerFooter';
+
 import Landing from './components/Landing/Landing';
 import Dashboard from './components/Dashboard/Dashboard';
 
@@ -32,12 +35,25 @@ import Notifications from './components/Notifications/Notifications';
 
 import { UserContext } from './contexts/UserContext';
 
+const CustomerLayout = () => {
+  return (
+    <>
+      <CustomerNavbar />
+      <Outlet />
+      <CustomerFooter />
+    </>
+  );
+};
+
 const App = () => {
   const { user } = useContext(UserContext);
+  const location = useLocation();
+
+  const isStorePage = location.pathname.startsWith('/store/');
 
   return (
     <>
-      <NavBar />
+      {!isStorePage && <NavBar />}
 
       <Routes>
         <Route
@@ -76,6 +92,16 @@ const App = () => {
         />
 
         <Route
+          path="/stores/orders"
+          element={<StoreOrders />}
+        />
+
+        <Route
+          path="/stores/notifications"
+          element={<Notifications />}
+        />
+
+        <Route
           path="/stores/:storeId/orders"
           element={<StoreOrders />}
         />
@@ -83,11 +109,6 @@ const App = () => {
         <Route
           path="/stores/:storeId/notifications"
           element={<Notifications />}
-        />
-
-        <Route
-          path="/store/:slug"
-          element={<StorePage />}
         />
 
         <Route
@@ -111,29 +132,59 @@ const App = () => {
         />
 
         <Route
-          path="/cart"
-          element={<Cart />}
-        />
+          path="/store/:slug"
+          element={<CustomerLayout />}
+        >
+          <Route
+            index
+            element={<StorePage />}
+          />
 
-        <Route
-          path="/checkout"
-          element={<Checkout />}
-        />
+          <Route
+            path="products"
+            element={<StoreProducts />}
+          />
 
-        <Route
-          path="/orders"
-          element={<Orders />}
-        />
+          <Route
+            path="products/:productId"
+            element={<ProductDetails />}
+          />
 
-        <Route
-          path="/orders/:orderId/track"
-          element={<OrderTracking />}
-        />
+          <Route
+            path="about"
+            element={<StorePage />}
+          />
 
-        <Route
-          path="/order-success"
-          element={<OrderSuccess />}
-        />
+          <Route
+            path="contact"
+            element={<StorePage />}
+          />
+
+          <Route
+            path="cart"
+            element={<Cart />}
+          />
+
+          <Route
+            path="checkout"
+            element={<Checkout />}
+          />
+
+          <Route
+            path="orders"
+            element={<Orders />}
+          />
+
+          <Route
+            path="order-success"
+            element={<OrderSuccess />}
+          />
+
+          <Route
+            path="orders/:orderId/track"
+            element={<OrderTracking />}
+          />
+        </Route>
       </Routes>
     </>
   );

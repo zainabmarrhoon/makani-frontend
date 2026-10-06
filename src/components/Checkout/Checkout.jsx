@@ -1,16 +1,20 @@
-import { useContext, useState } from 'react';
-import { useNavigate } from 'react-router';
+import { useContext, useEffect, useState } from 'react';
+import { useNavigate, useParams } from 'react-router';
 import { CartContext } from '../../contexts/CartContext';
 import { createOrder } from '../../services/orderService';
+import { getPublicStore } from '../../services/storeService';
 
 const Checkout = () => {
   const navigate = useNavigate();
+  const { slug } = useParams();
 
   const {
     cartItems,
     total,
     clearCart
   } = useContext(CartContext);
+
+  const [store, setStore] = useState(null);
 
   const [formData, setFormData] = useState({
     customerName: '',
@@ -19,10 +23,22 @@ const Checkout = () => {
     paymentMethod: ''
   });
 
+  const [paymentProof, setPaymentProof] = useState(null);
   const [message, setMessage] = useState('');
   const [copied, setCopied] = useState(false);
 
-  const iban = 'YOUR_IBAN_HERE';
+  useEffect(() => {
+    const loadStore = async () => {
+      try {
+        const storeData = await getPublicStore(slug);
+        setStore(storeData);
+      } catch (err) {
+        setMessage(err.message);
+      }
+    };
+
+    loadStore();
+  }, [slug]);
 
   const handleChange = (event) => {
     const { name, value } = event.target;
@@ -33,9 +49,18 @@ const Checkout = () => {
     });
   };
 
+  const handlePaymentProofChange = (event) => {
+    setPaymentProof(
+      event.target.files[0] || null
+    );
+  };
+
   const handleCopyIban = async () => {
     try {
-      await navigator.clipboard.writeText(iban);
+      await navigator.clipboard.writeText(
+        store.benefitpay_iban
+      );
+
       setCopied(true);
 
       setTimeout(() => {
@@ -62,6 +87,24 @@ const Checkout = () => {
         throw new Error('Store information is missing');
       }
 
+      if (
+        formData.paymentMethod === 'benefitpay' &&
+        !store.benefitpay_iban
+      ) {
+        throw new Error(
+          'BenefitPay IBAN is not available for this store'
+        );
+      }
+
+      if (
+        formData.paymentMethod === 'benefitpay' &&
+        !paymentProof
+      ) {
+        throw new Error(
+          'Please upload your payment proof'
+        );
+      }
+
       const orderData = {
         customer_name: formData.customerName,
         customer_phone: formData.phone,
@@ -75,7 +118,8 @@ const Checkout = () => {
 
       const order = await createOrder(
         storeId,
-        orderData
+        orderData,
+        paymentProof
       );
 
       const savedOrders =
@@ -101,21 +145,35 @@ const Checkout = () => {
 
       clearCart();
 
-      navigate('/order-success', {
-        state: {
-          orderId: order.id
+      navigate(
+        `/store/${slug}/order-success`,
+        {
+          state: {
+            orderId: order.id
+          }
         }
-      });
+      );
     } catch (err) {
       setMessage(err.message);
     }
   };
 
+  if (!store) {
+    return (
+      <div className="checkout-page">
+        <p>Loading checkout...</p>
+      </div>
+    );
+  }
+
   return (
     <div className="checkout-page">
+
       <button
         type="button"
-        onClick={() => navigate('/cart')}
+        onClick={() =>
+          navigate(`/store/${slug}/cart`)
+        }
       >
         Back to Cart
       </button>
@@ -151,6 +209,7 @@ const Checkout = () => {
       </div>
 
       <form onSubmit={handleSubmit}>
+
         <div>
           <label>Full Name</label>
 
@@ -214,6 +273,7 @@ const Checkout = () => {
 
         {formData.paymentMethod === 'benefitpay' && (
           <div className="benefitpay-payment">
+
             <h2>BenefitPay Payment</h2>
 
             <p>
@@ -222,14 +282,19 @@ const Checkout = () => {
             </p>
 
             <div>
-              <span>{iban}</span>
+              <span>
+                {store.benefitpay_iban ||
+                  'IBAN not available'}
+              </span>
 
-              <button
-                type="button"
-                onClick={handleCopyIban}
-              >
-                {copied ? 'Copied' : 'Copy'}
-              </button>
+              {store.benefitpay_iban && (
+                <button
+                  type="button"
+                  onClick={handleCopyIban}
+                >
+                  {copied ? 'Copied' : 'Copy'}
+                </button>
+              )}
             </div>
 
             <p>
@@ -241,15 +306,18 @@ const Checkout = () => {
 
             <input
               type="file"
-              accept="image/*"
+              accept="image/jpeg,image/png,image/webp"
+              onChange={handlePaymentProofChange}
               required
             />
+
           </div>
         )}
 
         <button type="submit">
           Place Order
         </button>
+
       </form>
     </div>
   );

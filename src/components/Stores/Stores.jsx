@@ -55,13 +55,16 @@ const Stores = () => {
           {stores.map((store) => (
             <div className="store-card" key={store.id}>
               <h2>{store.name}</h2>
+
+              <p>Status: {store.status}</p>
+
               <p>{store.description}</p>
 
               <button
                 className="manage-store-btn"
                 onClick={() => navigate(`/stores/${store.id}`)}
               >
-                Manage Store
+                Complete Your Building
               </button>
             </div>
           ))}
@@ -72,3 +75,4 @@ const Stores = () => {
 };
 
 export default Stores;
+
