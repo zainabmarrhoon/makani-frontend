@@ -72,7 +72,7 @@ const StoreProducts = () => {
           <h2>No products yet</h2>
 
           <p>
-            This store has not added any products.
+            This store has not added any products
           </p>
         </div>
       ) : (

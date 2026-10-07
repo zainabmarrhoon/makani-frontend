@@ -246,7 +246,7 @@ const Dashboard = () => {
 
         <p>
           Makani gives you one place to manage your online
-          store and keep everything organized.
+          store and keep everything organized
         </p>
       </section>
     </main>

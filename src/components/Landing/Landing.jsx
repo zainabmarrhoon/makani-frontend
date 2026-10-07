@@ -155,7 +155,7 @@ const Landing = () => {
         <div className="landing-cta-content">
           <p className="landing-label">READY TO START?</p>
 
-          <h2>Your Business Deserves Its Own Place Online.</h2>
+          <h2>Your Business Deserves Its Own Place Online</h2>
 
           <p>
             Create your store, add your products, and start building

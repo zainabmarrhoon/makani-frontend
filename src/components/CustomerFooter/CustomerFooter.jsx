@@ -40,7 +40,7 @@ const CustomerFooter = () => {
   return (
     <footer className="customer-footer">
       <p>
-        © {new Date().getFullYear()} {store.name}. All rights reserved.
+        © {new Date().getFullYear()} {store.name}. All rights reserved
       </p>
     </footer>
   );
