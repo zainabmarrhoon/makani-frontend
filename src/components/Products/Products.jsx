@@ -45,7 +45,7 @@ const Products = () => {
           <h2>No stores yet</h2>
 
           <p>
-            Create a store before adding products.
+            Create a store before adding products
           </p>
 
           <button
@@ -66,7 +66,7 @@ const Products = () => {
               <h2>{store.name}</h2>
 
               <p>
-                Manage the products for this store.
+                Manage the products for this store
               </p>
 
               <button
