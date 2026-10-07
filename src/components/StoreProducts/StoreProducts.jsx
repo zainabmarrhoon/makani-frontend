@@ -1,49 +1,65 @@
+
 import { useEffect, useState, useContext } from 'react';
 import { useNavigate, useParams } from 'react-router';
 import { CartContext } from '../../contexts/CartContext';
 import { getPublicStore } from '../../services/storeService';
+import {
+  getStoreProducts,
+  deleteProduct
+} from '../../services/productService';
 
 const BASE_URL = import.meta.env.VITE_BACK_END_SERVER_URL;
 
 const StoreProducts = () => {
   const navigate = useNavigate();
-  const { slug } = useParams();
+  const { slug, storeId } = useParams();
 
   const { addToCart } = useContext(CartContext);
 
   const [store, setStore] = useState(null);
+  const [products, setProducts] = useState([]);
   const [message, setMessage] = useState('');
 
+  const isOwner = Boolean(storeId);
+
   useEffect(() => {
-    const loadStore = async () => {
+    const loadProducts = async () => {
       try {
-        const data = await getPublicStore(slug);
-        setStore(data);
+        if (isOwner) {
+          const data = await getStoreProducts(storeId);
+          setProducts(data);
+        } else {
+          const data = await getPublicStore(slug);
+          setStore(data);
+          setProducts(data.products || []);
+        }
       } catch (err) {
         setMessage(err.message);
       }
     };
 
-    loadStore();
-  }, [slug]);
+    loadProducts();
+  }, [storeId, slug, isOwner]);
 
-  if (message) {
-    return (
-      <div className="store-products-page">
-        <p>{message}</p>
-      </div>
-    );
-  }
+  const handleAddProduct = () => {
+    navigate(`/products/create?storeId=${storeId}`);
+  };
 
-  if (!store) {
-    return (
-      <div className="store-products-page">
-        <p>Loading products...</p>
-      </div>
-    );
-  }
+  const handleEditProduct = (productId) => {
+    navigate(`/products/${productId}/edit`);
+  };
 
-  const products = store.products || [];
+  const handleDeleteProduct = async (productId) => {
+    try {
+      await deleteProduct(productId);
+
+      setProducts(
+        products.filter((product) => product.id !== productId)
+      );
+    } catch (err) {
+      setMessage(err.message);
+    }
+  };
 
   const handleAddToCart = (product) => {
     addToCart({
@@ -55,16 +71,39 @@ const StoreProducts = () => {
   };
 
   const handleViewProduct = (productId) => {
+    if (isOwner) {
+      navigate(`/products/${productId}`);
+      return;
+    }
+
     navigate(
       `/store/${store.slug}/products/${productId}`
     );
   };
 
+  if (message) {
+    return (
+      <div className="store-products-page">
+        <p>{message}</p>
+      </div>
+    );
+  }
+
   return (
     <div className="store-products-page">
-
       <section className="store-products-header">
-        <h1>Products</h1>
+        <h1>
+          {isOwner ? 'Manage Products' : 'Products'}
+        </h1>
+
+        {isOwner && (
+          <button
+            type="button"
+            onClick={handleAddProduct}
+          >
+            Add Product
+          </button>
+        )}
       </section>
 
       {products.length === 0 ? (
@@ -72,8 +111,19 @@ const StoreProducts = () => {
           <h2>No products yet</h2>
 
           <p>
-            This store has not added any products
+            {isOwner
+              ? 'Add a product to your store'
+              : 'This store has not added any products'}
           </p>
+
+          {isOwner && (
+            <button
+              type="button"
+              onClick={handleAddProduct}
+            >
+              Add Product
+            </button>
+          )}
         </div>
       ) : (
         <div className="store-products-list">
@@ -97,28 +147,51 @@ const StoreProducts = () => {
                 {Number(product.price).toFixed(2)} BHD
               </p>
 
-              <button
-                type="button"
-                onClick={() =>
-                  handleViewProduct(product.id)
-                }
-              >
-                View Product
-              </button>
+              {isOwner ? (
+                <>
+                  <button
+                    type="button"
+                    onClick={() =>
+                      handleEditProduct(product.id)
+                    }
+                  >
+                    Edit
+                  </button>
 
-              <button
-                type="button"
-                onClick={() =>
-                  handleAddToCart(product)
-                }
-              >
-                Add to Cart
-              </button>
+                  <button
+                    type="button"
+                    onClick={() =>
+                      handleDeleteProduct(product.id)
+                    }
+                  >
+                    Delete
+                  </button>
+                </>
+              ) : (
+                <>
+                  <button
+                    type="button"
+                    onClick={() =>
+                      handleViewProduct(product.id)
+                    }
+                  >
+                    View Product
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() =>
+                      handleAddToCart(product)
+                    }
+                  >
+                    Add to Cart
+                  </button>
+                </>
+              )}
             </div>
           ))}
         </div>
       )}
-
     </div>
   );
 };
