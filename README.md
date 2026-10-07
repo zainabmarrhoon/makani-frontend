@@ -10,7 +10,7 @@ The platform also allows business owners to manage customer orders, verify payme
 
 *Add your application screenshot or project logo here.*
 
-## Getting Started
+
 
 ### Deployed App
 
