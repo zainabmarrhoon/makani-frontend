@@ -35,7 +35,7 @@ const CreateProduct = () => {
 
       await createProduct(storeId, formData);
 
-      navigate(`/stores/${storeId}`);
+      navigate(`/stores/${storeId}/products`);
     } catch (err) {
       setMessage(err.message);
     }
