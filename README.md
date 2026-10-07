@@ -36,3 +36,9 @@ The platform also allows business owners to manage customer orders, verify payme
 ## Attributions
 
 ## Next Steps
+
+* Add multiple store templates and allow business owners to create and customize their own store designs.
+* Add product categories, filtering, and customer reviews to improve the shopping experience.
+* Add sales and order analytics to help business owners monitor their store performance.
+* Add discounts, promo codes, email notifications, and additional payment methods.
+
