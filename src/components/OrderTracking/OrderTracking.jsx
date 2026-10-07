@@ -95,9 +95,15 @@ const OrderTracking = () => {
 
           return (
             <div
-              className="order-status-step"
+              className={`order-status-step ${
+               isCurrent
+                ? 'is-current'
+                 : isCompleted
+                  ? 'is-completed'
+                   : 'is-waiting'
+             }`}
               key={status}
-            >
+>
               <h2>{status}</h2>
 
               {isCompleted && (
