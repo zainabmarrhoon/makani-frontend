@@ -1,11 +1,13 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router';
+
 import {
   getStore,
   updateStore,
   uploadHeroImage,
   getPreviewStore
 } from '../../services/storeService';
+
 import { getStoreProducts } from '../../services/productService';
 
 const BASE_URL = import.meta.env.VITE_BACK_END_SERVER_URL;
@@ -18,6 +20,7 @@ const StoreDetails = () => {
   const [products, setProducts] = useState([]);
   const [message, setMessage] = useState('');
   const [saving, setSaving] = useState(false);
+
   const [heroImage, setHeroImage] = useState(null);
   const [logo, setLogo] = useState(null);
   const [publicUrl, setPublicUrl] = useState('');
@@ -53,29 +56,35 @@ const StoreDetails = () => {
         }
 
         setSettings({
-          show_home: storeData.show_home,
-          show_products: storeData.show_products,
-          show_about: storeData.show_about,
-          show_contact: storeData.show_contact,
-          show_cart: storeData.show_cart,
-          show_orders: storeData.show_orders,
+          show_home: storeData.show_home ?? true,
+          show_products: storeData.show_products ?? true,
+          show_about: storeData.show_about ?? true,
+          show_contact: storeData.show_contact ?? true,
+          show_cart: storeData.show_cart ?? true,
+          show_orders: storeData.show_orders ?? true,
+
           hero_title:
             storeData.hero_title ||
             `Welcome to ${storeData.name}`,
+
           hero_description:
             storeData.hero_description ||
             storeData.description ||
             '',
+
           hero_button_text:
             storeData.hero_button_text ||
             'Shop Now',
+
           about_title:
             storeData.about_title ||
             'About Us',
+
           about_description:
             storeData.about_description ||
             storeData.description ||
             '',
+
           benefitpay_iban:
             storeData.benefitpay_iban ||
             ''
@@ -88,52 +97,49 @@ const StoreDetails = () => {
     loadStore();
   }, [storeId]);
 
-  const handleSettingChange = (event) => {
+   const handleSettingChange = (event) => {
     const { name, value, type, checked } = event.target;
 
-    setSettings({
-      ...settings,
+    setSettings((currentSettings) => ({
+      ...currentSettings,
       [name]: type === 'checkbox' ? checked : value
-    });
-  };
+    }));
+   };
 
-  const handleHeroImageChange = (event) => {
+   const handleHeroImageChange = (event) => {
     setHeroImage(event.target.files[0] || null);
-  };
+   };
 
-  const handleLogoChange = (event) => {
+   const handleLogoChange = (event) => {
     setLogo(event.target.files[0] || null);
-  };
+   };
+   const handleSave = async () => {
+   console.log('SAVE BUTTON CLICKED');
 
-  const handleSave = async () => {
-    try {
-      setSaving(true);
-      setMessage('');
+   try {
+    setSaving(true);
+    setMessage('Saving changes...');
 
-      let updatedStore = await updateStore(
-        storeId,
-        settings
-      );
+    console.log('Sending update...');
 
-      if (heroImage) {
-        updatedStore = await uploadHeroImage(
-          storeId,
-          heroImage
-        );
-        setHeroImage(null);
-      }
+   const updatedStore = await updateStore(storeId, settings);
 
-      setStore(updatedStore);
+    console.log('STORE UPDATED:', updatedStore);
 
-      setMessage('Store settings saved successfully.');
-    } catch (err) {
-      setMessage(err.message);
-    } finally {
-      setSaving(false);
-    }
-  };
+    setStore(updatedStore);
+    setMessage('Store settings saved successfully.');
+  } catch (err) {
+    console.error('SAVE STORE ERROR:', err);
 
-  const handlePublish = async () => {
+    setMessage(
+      err?.message || 'Failed to save store settings.'
+    );
+  } finally {
+    setSaving(false);
+  }
+};
+
+   const handlePublish = async () => {
     try {
       setSaving(true);
       setMessage('');
@@ -151,6 +157,7 @@ const StoreDetails = () => {
           storeId,
           heroImage
         );
+
         setHeroImage(null);
       }
 
@@ -167,18 +174,18 @@ const StoreDetails = () => {
     } finally {
       setSaving(false);
     }
-  };
+   };
 
-  const handleCopyUrl = async () => {
+   const handleCopyUrl = async () => {
     try {
       await navigator.clipboard.writeText(publicUrl);
       setMessage('Store URL copied successfully.');
     } catch (err) {
       setMessage('Failed to copy store URL.');
     }
-  };
+   };
 
-  const handlePreview = async () => {
+   const handlePreview = async () => {
     try {
       const previewStore = await getPreviewStore(storeId);
 
@@ -186,15 +193,24 @@ const StoreDetails = () => {
         `/store/${previewStore.slug}?preview=true&storeId=${storeId}`,
         '_blank'
       );
-    } catch (err) {
+     } catch (err) {
       setMessage(err.message);
-    }
+  }
   };
 
   if (message && !store) {
     return (
       <div className="store-builder">
-        <p>{message}</p>
+        <div className="store-builder-error">
+          <h2>Something went wrong</h2>
+          <p>{message}</p>
+          <button
+            type="button"
+            onClick={() => navigate('/stores')}
+          >
+            Back to My Stores
+          </button>
+        </div>
       </div>
     );
   }
@@ -202,27 +218,44 @@ const StoreDetails = () => {
   if (!store) {
     return (
       <div className="store-builder">
-        <p>Loading your store...</p>
+        <div className="store-builder-loading">
+          <p>Loading your store...</p>
+        </div>
       </div>
     );
   }
 
+  const logoPreview = logo
+    ? URL.createObjectURL(logo)
+    : store.logo
+      ? `${BASE_URL}/${store.logo}`
+      : null;
+
+  const heroPreview = heroImage
+    ? URL.createObjectURL(heroImage)
+    : store.hero_image
+      ? `${BASE_URL}/${store.hero_image}`
+      : null;
+
   return (
     <div className="store-builder">
 
+      {/* TOOLBAR */}
       <div className="store-builder-toolbar">
 
         <button
           type="button"
+          className="builder-back-button"
           onClick={() => navigate('/stores')}
         >
-          Back to My Stores
+          ← Back to My Stores
         </button>
 
         <div className="store-builder-toolbar-actions">
 
           <button
             type="button"
+            className="builder-preview-button"
             onClick={handlePreview}
           >
             Preview
@@ -230,38 +263,82 @@ const StoreDetails = () => {
 
           <button
             type="button"
+            className="builder-publish-button"
             onClick={handlePublish}
             disabled={saving}
           >
-            {saving ? 'Saving...' : 'Publish'}
+            {saving ? 'Publishing...' : 'Publish Store'}
           </button>
 
         </div>
       </div>
 
+      {/* HEADER */}
+      <header className="store-builder-header">
+
+        <div>
+          <p className="store-builder-eyebrow">
+            STORE CUSTOMIZATION
+          </p>
+
+          <h1>Build your store</h1>
+
+          <p>
+            Customize your storefront, add your content,
+            and publish when everything looks right.
+          </p>
+        </div>
+
+        <div className="store-builder-store-name">
+          <span>YOUR STORE</span>
+          <strong>{store.name}</strong>
+          <small>/{store.slug}</small>
+        </div>
+
+      </header>
+
+      {/* MESSAGE */}
       {message && (
-        <p className="store-builder-message">
-          {message}
-        </p>
+        <div className="store-builder-message">
+          <span>✓</span>
+          <p>{message}</p>
+        </div>
       )}
 
+      {/* PUBLIC URL */}
       {publicUrl && (
-        <div className="store-public-url">
-          <p>Your store is published!</p>
+        <section className="store-public-url">
 
-          <input
-            type="text"
-            value={publicUrl}
-            readOnly
-          />
+          <div>
+            <span className="builder-section-label">
+              PUBLISHED STORE
+            </span>
 
-          <button
-            type="button"
-            onClick={handleCopyUrl}
-          >
-            Copy URL
-          </button>
-        </div>
+            <h3>Your store is live</h3>
+
+            <p>
+              Share this link with your customers.
+            </p>
+          </div>
+
+          <div className="store-public-url-actions">
+
+            <input
+              type="text"
+              value={publicUrl}
+              readOnly
+            />
+
+            <button
+              type="button"
+              onClick={handleCopyUrl}
+            >
+              Copy URL
+            </button>
+
+          </div>
+
+        </section>
       )}
 
       <main className="store-builder-form-container">
@@ -274,215 +351,404 @@ const StoreDetails = () => {
           }}
         >
 
-          <h1>Store Builder</h1>
-
+          {/* STORE SECTIONS */}
           <section className="builder-form-section">
 
-            <h2>Store Sections</h2>
+            <div className="builder-section-heading">
+              <div>
+                <span className="builder-section-number">
+                  01
+                </span>
 
-            <label>
-              <input
-                type="checkbox"
-                name="show_home"
-                checked={settings.show_home}
-                onChange={handleSettingChange}
-              />
-              Home
-            </label>
+                <div>
+                  <p className="builder-section-label">
+                    NAVIGATION
+                  </p>
 
-            <label>
-              <input
-                type="checkbox"
-                name="show_products"
-                checked={settings.show_products}
-                onChange={handleSettingChange}
-              />
-              Products
-            </label>
+                  <h2>Store Sections</h2>
 
-            <label>
-              <input
-                type="checkbox"
-                name="show_about"
-                checked={settings.show_about}
-                onChange={handleSettingChange}
-              />
-              About
-            </label>
+                  <p>
+                    Choose which sections customers can see
+                    in your store.
+                  </p>
+                </div>
+              </div>
+            </div>
 
-            <label>
-              <input
-                type="checkbox"
-                name="show_contact"
-                checked={settings.show_contact}
-                onChange={handleSettingChange}
-              />
-              Contact
-            </label>
+            <div className="store-sections-grid">
 
-            <label>
-              <input
-                type="checkbox"
-                name="show_cart"
-                checked={settings.show_cart}
-                onChange={handleSettingChange}
-              />
-              Cart
-            </label>
+              {[
+                ['show_home', 'Home', 'Your store landing page'],
+                ['show_products', 'Products', 'Browse your products'],
+                ['show_about', 'About', 'Tell customers about your business'],
+                ['show_contact', 'Contact', 'Your business contact details'],
+                ['show_cart', 'Cart', 'Customer shopping cart'],
+                ['show_orders', 'My Orders', 'Customer order tracking']
+              ].map(([name, title, description]) => (
+                <label
+                  key={name}
+                  className={`store-section-option ${
+                    settings[name] ? 'active' : ''
+                  }`}
+                >
 
-            <label>
-              <input
-                type="checkbox"
-                name="show_orders"
-                checked={settings.show_orders}
-                onChange={handleSettingChange}
-              />
-              My Orders
-            </label>
+                  <div className="store-section-option-text">
+
+                    <strong>{title}</strong>
+
+                    <span>{description}</span>
+
+                  </div>
+
+                  <input
+                    type="checkbox"
+                    name={name}
+                    checked={settings[name]}
+                    onChange={handleSettingChange}
+                  />
+
+                  <span className="custom-checkbox">
+                    ✓
+                  </span>
+
+                </label>
+              ))}
+
+            </div>
 
           </section>
 
+          {/* STORE LOGO */}
           <section className="builder-form-section">
 
-            <h2>Store Logo</h2>
+            <div className="builder-section-heading">
+              <div>
+                <span className="builder-section-number">
+                  02
+                </span>
 
-            <label>
-              Upload Logo
+                <div>
+                  <p className="builder-section-label">
+                    BRANDING
+                  </p>
 
-              <input
-                type="file"
-                accept="image/jpeg,image/png,image/webp"
-                onChange={handleLogoChange}
-              />
-            </label>
+                  <h2>Store Logo</h2>
 
-            {logo && (
-              <p>
-                Selected: {logo.name}
-              </p>
-            )}
+                  <p>
+                    Add your business logo to make your store
+                    recognizable.
+                  </p>
+                </div>
+              </div>
+            </div>
 
-            {store.logo && !logo && (
-              <p>
-                Current logo: {store.logo.split('/').pop()}
-              </p>
-            )}
+            <div className="builder-upload-layout">
+
+              <div className="builder-image-preview">
+
+                {logoPreview ? (
+                  <img
+                    src={logoPreview}
+                    alt={`${store.name} logo`}
+                  />
+                ) : (
+                  <div className="builder-image-placeholder">
+                    <span>LOGO</span>
+                    <p>No logo selected</p>
+                  </div>
+                )}
+
+              </div>
+
+              <div className="builder-upload-content">
+
+                <label className="builder-file-label">
+
+                  <span>Choose Logo</span>
+
+                  <input
+                    type="file"
+                    accept="image/jpeg,image/png,image/webp"
+                    onChange={handleLogoChange}
+                  />
+
+                </label>
+
+                {logo && (
+                  <p className="builder-file-name">
+                    Selected: {logo.name}
+                  </p>
+                )}
+
+                {!logo && store.logo && (
+                  <p className="builder-file-name">
+                    Current logo is uploaded.
+                  </p>
+                )}
+
+                <p className="builder-help-text">
+                  Use a clear JPG, PNG, or WEBP image.
+                </p>
+
+              </div>
+
+            </div>
 
           </section>
 
+          {/* HERO */}
           <section className="builder-form-section">
 
-            <h2>Hero Section</h2>
+            <div className="builder-section-heading">
+              <div>
+                <span className="builder-section-number">
+                  03
+                </span>
 
-            <label>
-              Hero Image
+                <div>
+                  <p className="builder-section-label">
+                    HOMEPAGE
+                  </p>
 
-              <input
-                type="file"
-                accept="image/jpeg,image/png,image/webp"
-                onChange={handleHeroImageChange}
-              />
-            </label>
+                  <h2>Hero Section</h2>
 
-            {heroImage && (
-              <p>
-                Selected: {heroImage.name}
-              </p>
-            )}
+                  <p>
+                    Create the first impression customers see
+                    when they visit your store.
+                  </p>
+                </div>
+              </div>
+            </div>
 
-            {store.hero_image && !heroImage && (
-              <p>
-                Current hero image:{' '}
-                {store.hero_image.split('/').pop()}
-              </p>
-            )}
+            <div className="builder-upload-layout">
 
-            <label>
-              Hero Title
+              <div className="builder-image-preview hero-preview">
 
-              <input
-                type="text"
-                name="hero_title"
-                value={settings.hero_title}
-                onChange={handleSettingChange}
-              />
-            </label>
+                {heroPreview ? (
+                  <img
+                    src={heroPreview}
+                    alt="Store hero"
+                  />
+                ) : (
+                  <div className="builder-image-placeholder">
+                    <span>HERO</span>
+                    <p>No hero image selected</p>
+                  </div>
+                )}
 
-            <label>
-              Hero Description
+              </div>
+
+              <div className="builder-upload-content">
+
+                <label className="builder-file-label">
+
+                  <span>Choose Hero Image</span>
+
+                  <input
+                    type="file"
+                    accept="image/jpeg,image/png,image/webp"
+                    onChange={handleHeroImageChange}
+                  />
+
+                </label>
+
+                {heroImage && (
+                  <p className="builder-file-name">
+                    Selected: {heroImage.name}
+                  </p>
+                )}
+
+                {!heroImage && store.hero_image && (
+                  <p className="builder-file-name">
+                    Current hero image is uploaded.
+                  </p>
+                )}
+
+                <p className="builder-help-text">
+                  A wide image works best for the storefront
+                  hero section.
+                </p>
+
+              </div>
+
+            </div>
+
+            <div className="builder-fields-grid">
+
+              <label className="builder-field">
+                <span>Hero Title</span>
+
+                <input
+                  type="text"
+                  name="hero_title"
+                  value={settings.hero_title}
+                  onChange={handleSettingChange}
+                  placeholder="Welcome to your store"
+                />
+              </label>
+
+              <label className="builder-field">
+                <span>Button Text</span>
+
+                <input
+                  type="text"
+                  name="hero_button_text"
+                  value={settings.hero_button_text}
+                  onChange={handleSettingChange}
+                  placeholder="Shop Now"
+                />
+              </label>
+
+            </div>
+
+            <label className="builder-field">
+
+              <span>Hero Description</span>
 
               <textarea
                 name="hero_description"
                 value={settings.hero_description}
                 onChange={handleSettingChange}
+                placeholder="Tell customers what makes your store special."
+                rows="5"
               />
-            </label>
 
-            <label>
-              Button Text
-
-              <input
-                type="text"
-                name="hero_button_text"
-                value={settings.hero_button_text}
-                onChange={handleSettingChange}
-              />
             </label>
 
           </section>
 
+          {/* ABOUT */}
           <section className="builder-form-section">
 
-            <h2>About Section</h2>
+            <div className="builder-section-heading">
+              <div>
+                <span className="builder-section-number">
+                  04
+                </span>
 
-            <label>
-              About Title
+                <div>
+                  <p className="builder-section-label">
+                    YOUR STORY
+                  </p>
+
+                  <h2>About Section</h2>
+
+                  <p>
+                    Give customers a little more information
+                    about your business.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <label className="builder-field">
+
+              <span>About Title</span>
 
               <input
                 type="text"
                 name="about_title"
                 value={settings.about_title}
                 onChange={handleSettingChange}
+                placeholder="About Us"
               />
+
             </label>
 
-            <label>
-              About Description
+            <label className="builder-field">
+
+              <span>About Description</span>
 
               <textarea
                 name="about_description"
                 value={settings.about_description}
                 onChange={handleSettingChange}
+                placeholder="Tell customers about your business."
+                rows="6"
               />
+
             </label>
 
           </section>
 
+          {/* BENEFITPAY */}
           <section className="builder-form-section">
 
-            <h2>BenefitPay Settings</h2>
+            <div className="builder-section-heading">
+              <div>
+                <span className="builder-section-number">
+                  05
+                </span>
 
-            <label>
-              BenefitPay IBAN
+                <div>
+                  <p className="builder-section-label">
+                    PAYMENT
+                  </p>
 
-              <input
-                type="text"
-                name="benefitpay_iban"
-                value={settings.benefitpay_iban}
-                onChange={handleSettingChange}
-                placeholder="Enter BenefitPay IBAN"
-              />
-            </label>
+                  <h2>BenefitPay Settings</h2>
+
+                  <p>
+                    Add your BenefitPay IBAN for customers
+                    who choose BenefitPay at checkout.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="benefitpay-builder-card">
+
+              <div className="benefitpay-icon">
+                B
+              </div>
+
+              <div className="benefitpay-field">
+
+                <label className="builder-field">
+
+                  <span>BenefitPay IBAN</span>
+
+                  <input
+                    type="text"
+                    name="benefitpay_iban"
+                    value={settings.benefitpay_iban}
+                    onChange={handleSettingChange}
+                    placeholder="Enter BenefitPay IBAN"
+                  />
+
+                </label>
+
+                <p>
+                  Customers will see this information when
+                  choosing BenefitPay as their payment method.
+                </p>
+
+              </div>
+
+            </div>
 
           </section>
 
-          <button
-            type="submit"
-            className="save-builder-button"
-            disabled={saving}
-          >
-            {saving ? 'Saving...' : 'Save Changes'}
-          </button>
+          {/* SAVE */}
+          <div className="builder-save-area">
+
+            <div>
+              <h3>Ready to update your store?</h3>
+
+              <p>
+                Save your changes before publishing your
+                storefront.
+              </p>
+            </div>
+
+            <button
+              type="submit"
+              className="save-builder-button"
+              disabled={saving}
+            >
+              {saving ? 'Saving...' : 'Save Changes'}
+            </button>
+
+          </div>
 
         </form>
 
