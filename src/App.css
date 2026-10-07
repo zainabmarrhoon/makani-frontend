@@ -6967,44 +6967,93 @@ nav li a:hover::after {
 }
 
 /* =========================================================
-   COMPLETED + CURRENT STATES
+   STATUS STATES
 ========================================================= */
 
-/*
-  The JSX does not add separate classes for completed/current.
-  We use :has() so the styling stays CSS-only.
-*/
+/* Completed */
 
-.order-status-step:has(p) {
-  /* keeps the step visually stable */
+.order-status-step.is-completed::before {
+  background: var(--green);
+  border-color: var(--green);
+  box-shadow: 0 7px 18px rgba(85, 117, 95, 0.22);
 }
 
-/* Current step */
-
-.order-status-step:has(p:first-of-type) {
-  color: var(--burgundy);
+.order-status-step.is-completed h2 {
+  color: var(--green);
 }
 
-/* Completed/current circle */
+.order-status-step.is-completed p {
+  color: var(--green);
+  font-weight: 700;
+}
 
-.order-status-step:has(p:not(:only-child))::before {
+.order-status-step.is-completed h2::before {
+  content: '✓';
+  position: absolute;
+  top: 13px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: #ffffff;
+  font-size: 18px;
+  font-weight: 900;
+}
+
+
+/* Current */
+
+.order-status-step.is-current::before {
   background: var(--burgundy);
-
   border-color: var(--burgundy);
-
-  box-shadow: 0 7px 18px rgba(123, 23, 49, 0.18);
+  box-shadow:
+    0 0 0 6px rgba(123, 23, 49, 0.10),
+    0 8px 22px rgba(123, 23, 49, 0.24);
+  transform: scale(1.08);
 }
 
-/* Current text */
-
-.order-status-step:has(p:first-of-type) h2 {
+.order-status-step.is-current h2 {
   color: var(--burgundy);
+  font-weight: 900;
 }
 
-.order-status-step:has(p:first-of-type) p {
+.order-status-step.is-current p {
   color: var(--burgundy);
-
   font-weight: 800;
+}
+
+.order-status-step.is-current h2::before {
+  content: '•';
+  position: absolute;
+  top: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: #ffffff;
+  font-size: 27px;
+  line-height: 1;
+  font-weight: 900;
+}
+
+
+/* Waiting */
+
+.order-status-step.is-waiting::before {
+  background: #f3eeea;
+  border-color: #ddd3cc;
+  box-shadow: none;
+}
+
+.order-status-step.is-waiting h2 {
+  color: #8f8587;
+}
+
+.order-status-step.is-waiting p {
+  color: #aaa0a2;
+}
+
+
+/* Connecting line */
+
+.order-status-timeline::before {
+  background: #e5ddd8;
 }
 
 /* =========================================================
