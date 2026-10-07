@@ -6706,3 +6706,456 @@ nav li a:hover::after {
     padding-right: 18px;
   }
 }
+
+/* =========================================================
+   CUSTOMER STORE - ORDER TRACKING
+========================================================= */
+
+.order-tracking-page {
+  width: 100%;
+  min-height: calc(100vh - 76px);
+
+  padding: 70px 6% 90px;
+
+  background: var(--ivory);
+  color: var(--text);
+
+  text-align: center;
+}
+
+/* -------------------------
+   Back Button
+------------------------- */
+
+.order-tracking-page > button:first-child {
+  display: block;
+
+  width: fit-content;
+
+  margin: 0 auto 35px;
+
+  padding: 9px 16px;
+
+  border: 1px solid rgba(123, 23, 49, 0.2);
+  border-radius: 10px;
+
+  background: transparent;
+  color: var(--burgundy);
+
+  font-size: 14px;
+  font-weight: 700;
+
+  box-shadow: none;
+
+  transition:
+    background var(--transition),
+    color var(--transition),
+    border-color var(--transition),
+    transform var(--transition);
+}
+
+.order-tracking-page > button:first-child:hover {
+  background: rgba(123, 23, 49, 0.06);
+
+  color: var(--burgundy-dark);
+
+  border-color: var(--burgundy);
+
+  transform: translateX(-2px);
+
+  box-shadow: none;
+}
+
+/* -------------------------
+   Header
+------------------------- */
+
+.order-tracking-header {
+  max-width: 800px;
+
+  margin: 0 auto 55px;
+
+  padding: 30px;
+
+  background: #ffffff;
+
+  border: 1px solid rgba(123, 23, 49, 0.08);
+  border-radius: var(--radius-lg);
+
+  box-shadow: var(--shadow);
+}
+
+.order-tracking-header h1 {
+  margin: 0;
+
+  color: var(--burgundy);
+
+  font-size: clamp(34px, 5vw, 48px);
+
+  font-weight: 800;
+
+  letter-spacing: -1px;
+}
+
+.order-tracking-header h1::after {
+  content: '';
+
+  display: block;
+
+  width: 55px;
+  height: 3px;
+
+  margin: 18px auto 22px;
+
+  background: var(--burgundy);
+
+  border-radius: 999px;
+}
+
+.order-tracking-header p {
+  margin: 7px 0;
+
+  color: var(--muted);
+
+  font-size: 15px;
+
+  line-height: 1.6;
+}
+
+.order-tracking-header p:last-child {
+  display: inline-block;
+
+  margin-top: 15px;
+
+  padding: 8px 15px;
+
+  border-radius: 999px;
+
+  background: var(--cream);
+
+  color: var(--burgundy);
+
+  font-size: 13px;
+
+  font-weight: 800;
+
+  text-transform: capitalize;
+}
+
+/* =========================================================
+   STATUS TIMELINE
+========================================================= */
+
+.order-status-timeline {
+  position: relative;
+
+  width: 100%;
+  max-width: 1000px;
+
+  margin: 0 auto;
+
+  display: grid;
+
+  grid-template-columns: repeat(5, 1fr);
+
+  gap: 0;
+}
+
+/* Connecting line */
+
+.order-status-timeline::before {
+  content: '';
+
+  position: absolute;
+
+  top: 25px;
+  left: 10%;
+  right: 10%;
+
+  height: 3px;
+
+  background: rgba(123, 23, 49, 0.12);
+
+  border-radius: 999px;
+}
+
+/* -------------------------
+   Individual Step
+------------------------- */
+
+.order-status-step {
+  position: relative;
+
+  z-index: 1;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  min-width: 0;
+}
+
+/* Circle */
+
+.order-status-step::before {
+  content: '';
+
+  width: 50px;
+  height: 50px;
+
+  margin-bottom: 16px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+
+  background: var(--cream);
+
+  border: 3px solid rgba(123, 23, 49, 0.14);
+
+  box-sizing: border-box;
+
+  transition:
+    background var(--transition),
+    border-color var(--transition),
+    box-shadow var(--transition),
+    transform var(--transition);
+}
+
+/* Check mark for completed steps */
+
+.order-status-step h2::before {
+  content: '';
+
+  position: absolute;
+
+  top: 14px;
+
+  font-size: 18px;
+
+  font-weight: 800;
+
+  color: #ffffff;
+}
+
+/* -------------------------
+   Step Text
+------------------------- */
+
+.order-status-step h2 {
+  margin: 0;
+
+  color: var(--muted);
+
+  font-size: 15px;
+
+  font-weight: 800;
+
+  text-transform: capitalize;
+}
+
+.order-status-step p {
+  margin: 7px 0 0;
+
+  color: #a49799;
+
+  font-size: 12px;
+
+  font-weight: 600;
+}
+
+/* =========================================================
+   COMPLETED + CURRENT STATES
+========================================================= */
+
+/*
+  The JSX does not add separate classes for completed/current.
+  We use :has() so the styling stays CSS-only.
+*/
+
+.order-status-step:has(p) {
+  /* keeps the step visually stable */
+}
+
+/* Current step */
+
+.order-status-step:has(p:first-of-type) {
+  color: var(--burgundy);
+}
+
+/* Completed/current circle */
+
+.order-status-step:has(p:not(:only-child))::before {
+  background: var(--burgundy);
+
+  border-color: var(--burgundy);
+
+  box-shadow: 0 7px 18px rgba(123, 23, 49, 0.18);
+}
+
+/* Current text */
+
+.order-status-step:has(p:first-of-type) h2 {
+  color: var(--burgundy);
+}
+
+.order-status-step:has(p:first-of-type) p {
+  color: var(--burgundy);
+
+  font-weight: 800;
+}
+
+/* =========================================================
+   CANCELLED
+========================================================= */
+
+.order-cancelled {
+  max-width: 650px;
+
+  margin: 45px auto 0;
+
+  padding: 25px 30px;
+
+  background: rgba(166, 56, 67, 0.06);
+
+  border: 1px solid rgba(166, 56, 67, 0.18);
+
+  border-radius: var(--radius-md);
+}
+
+.order-cancelled h2 {
+  margin: 0 0 8px;
+
+  color: var(--red);
+
+  font-size: 21px;
+
+  font-weight: 800;
+}
+
+.order-cancelled p {
+  margin: 0;
+
+  color: var(--muted);
+
+  font-size: 14px;
+}
+
+/* =========================================================
+   LOADING / ERROR
+========================================================= */
+
+.order-tracking-page > p {
+  margin: 100px auto;
+
+  color: var(--muted);
+
+  font-size: 16px;
+}
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 800px) {
+  .order-tracking-page {
+    padding: 55px 5% 70px;
+  }
+
+  .order-tracking-header {
+    padding: 25px 20px;
+
+    margin-bottom: 45px;
+  }
+
+  .order-status-timeline {
+    grid-template-columns: 1fr;
+
+    gap: 22px;
+
+    max-width: 500px;
+  }
+
+  /* Vertical line */
+
+  .order-status-timeline::before {
+    top: 25px;
+    bottom: 25px;
+
+    left: 25px;
+    right: auto;
+
+    width: 3px;
+    height: auto;
+  }
+
+  .order-status-step {
+    display: grid;
+
+    grid-template-columns: 50px 1fr;
+
+    column-gap: 18px;
+
+    align-items: center;
+
+    text-align: left;
+  }
+
+  .order-status-step::before {
+    grid-column: 1;
+    grid-row: 1 / span 2;
+
+    margin: 0;
+  }
+
+  .order-status-step h2 {
+    grid-column: 2;
+
+    grid-row: 1;
+  }
+
+  .order-status-step p {
+    grid-column: 2;
+
+    grid-row: 2;
+
+    margin-top: 4px;
+  }
+
+  .order-status-step h2::before {
+    display: none;
+  }
+}
+
+@media (max-width: 500px) {
+  .order-tracking-page {
+    padding: 45px 20px 60px;
+  }
+
+  .order-tracking-header {
+    padding: 22px 18px;
+  }
+
+  .order-tracking-header h1 {
+    font-size: 32px;
+  }
+
+  .order-status-step {
+    column-gap: 15px;
+  }
+
+  .order-status-step::before {
+    width: 44px;
+    height: 44px;
+  }
+
+  .order-status-timeline::before {
+    left: 22px;
+  }
+
+  .order-cancelled {
+    padding: 22px 18px;
+  }
+}
