@@ -8,6 +8,8 @@ Business owners can create their store, add and manage products, customize their
 
 The platform also allows business owners to manage customer orders, verify payments, update order statuses, and receive notifications when new orders are placed.
 
+[Watch the Project Introduction Video](./imges/makani.mp4)
+
 ## Application Screenshot
 
 <p align="center">
